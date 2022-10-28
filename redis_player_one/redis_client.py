@@ -1,11 +1,8 @@
-import os
 import redis
+from config import REDIS_HOST, REDIS_PORT, REDIS_PASSWORD
 
-R_HOST = os.getenv("R_HOST")
-R_PORT = os.getenv("R_PORT")
-R_PASSWORD = os.getenv("R_PASSWORD")
 
-redis_client = redis.Redis(host=R_HOST, port=R_PORT, password=R_PASSWORD)
+redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD)
 
 
 def retrieve_paper(r_client, key):
@@ -20,4 +17,3 @@ def retrieve_paper(r_client, key):
         "authors": authors,
         "year": year,
     }
-

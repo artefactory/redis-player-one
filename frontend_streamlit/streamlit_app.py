@@ -1,5 +1,7 @@
 import streamlit as st
-from redis_player_one.redis_client import redis_client, retrieve_paper, R_HOST, R_PORT
+
+from redis_player_one.redis_client import redis_client, retrieve_paper
+
 
 st.title('Redis Player One - Search Engine')
 # Add it in header ? With buttons to click on links
@@ -9,7 +11,7 @@ st.subheader('Type a topic to find related articles...')
 nb_articles = st.number_input("Insert a number of articles to retrieve", step=1)
 
 
-left_side, right_side = st.columns([1,1])
+left_side, right_side = st.columns([1, 1])
 # Button for filtering by date
 date_list = [i for i in range(2022, 1985, -1)]
 with left_side:
@@ -28,5 +30,3 @@ if nb_articles:
     for key in articles_keys:
         paper = retrieve_paper(redis_client, key)
         st.write(paper)
-
-    
