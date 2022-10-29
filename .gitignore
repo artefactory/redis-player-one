@@ -3,3 +3,8 @@ arxiv-metadata-oai-snapshot.json
 *.DS_STORE
 *.log
 
+
+__pycache__/
+.vscode/
+.DS_Store
+env.sh
