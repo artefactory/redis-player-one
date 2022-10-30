@@ -4,8 +4,8 @@ import numpy as np
 import streamlit as st
 from redis.commands.search.query import Query
 
-from data.categories import CAT_TO_DEFINITION_MAP
 from config.redis_config import INDEX_NAME, SEARCH_TYPE
+from data.categories import CAT_TO_DEFINITION_MAP
 from redis_player_one.embedder import make_embeddings
 from redis_player_one.redis_client import redis_client
 
@@ -122,7 +122,7 @@ def app():
                         cat_str = "Unknown categories"
                     st.markdown(f'<h1 style="color:#57C075;font-size:14px;"><u>Categories:</u><br>{cat_str}</h1>',
                                 unsafe_allow_html=True)
-                    
+
                 st.markdown("""---""")
 
 
