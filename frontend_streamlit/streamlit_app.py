@@ -4,6 +4,7 @@ import numpy as np
 import streamlit as st
 from redis.commands.search.query import Query
 
+from data.categories import CAT_TO_DEFINITION_MAP
 from config.redis_config import INDEX_NAME, SEARCH_TYPE
 from redis_player_one.embedder import make_embeddings
 from redis_player_one.redis_client import redis_client
@@ -34,7 +35,18 @@ def create_query(
     return Query(base_query)\
         .sort_by("vector_score")\
         .paging(0, number_of_results)\
-        .return_fields("paper_id", "vector_score", "year", "title", "abstract")\
+        .return_fields("paper_id",
+                       "vector_score",
+                       "year",
+                       "title",
+                       "authors",
+                       "abstract",
+                       "categories",
+                       "update_date",
+                       "journal-ref",
+                       "submitter",
+                       "doi",
+                       "")\
         .dialect(2)
 
 
@@ -71,7 +83,10 @@ def app():
     date_range = st.sidebar.slider('Select a range of dates', 2015, 2022, (2016, 2019))
     clicked = st.sidebar.button('Submit')
     if clicked and user_text and nb_articles > 0:
-        st.write("You entered: ", user_text)
+        st.markdown(f'<h2 style="color:#1126ad;font-size:30px;">You\'ve entered: <br><em>\"{user_text}\"</em></h1>',
+                    unsafe_allow_html=True)
+        st.markdown("""---""")
+
         with st.spinner("Computing similarity research"):
             start_time = time.time()
             results = submit_text(
@@ -89,12 +104,25 @@ def app():
                                 unsafe_allow_html=True)
                     st.write(paper.abstract)
                 with col2:
-                    st.markdown('<h2 style="color:#ff0000;font-size:24px;">Similarity score</h1>',
+                    similarity_score_str = f"{round(100*(1 - float(paper.vector_score)), 1)}%"
+                    st.markdown(f'<h2 style="color:#ff0000;font-size:24px;">Similarity score:<br>{similarity_score_str}</h1>',
                                 unsafe_allow_html=True)
-                    st.write(f"{round(100*(1 - float(paper.vector_score)), 1)}%")
-                    st.markdown('<h2 style="color:#ff0000;font-size:24px;">Link to the article</h1>',
+                    st.markdown('<h2 style="color:#ff0000;font-size:16px;">Link to the article</h1>',
                                 unsafe_allow_html=True)
-                    st.write(f"https://arxiv.org/abs/{paper.id.replace('paper_vector:', '')}")
+                    st.write(f"https://arxiv.org/abs/{paper.paper_id}")
+
+                    if paper.update_date:
+                        st.markdown(f'<h1 style="color:#ff0000;font-size:14px;">Updated on:</u><br>{paper.update_date}</h1>',
+                                    unsafe_allow_html=True)
+
+                    if paper.categories:
+                        cats_list = paper.categories.split(",")
+                        cat_str = '<br>'.join(sorted(set(map(lambda x: CAT_TO_DEFINITION_MAP[x], cats_list))))
+                    else:
+                        cat_str = "Unknown categories"
+                    st.markdown(f'<h1 style="color:#57C075;font-size:14px;"><u>Categories:</u><br>{cat_str}</h1>',
+                                unsafe_allow_html=True)
+                    
                 st.markdown("""---""")
 
 

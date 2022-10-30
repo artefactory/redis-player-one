@@ -1,4 +1,4 @@
-_map = {
+CAT_TO_DEFINITION_MAP = {
     'astro-ph': 'Astrophysics',
     'astro-ph.CO': 'Cosmology and Nongalactic Astrophysics',
     'astro-ph.EP': 'Earth and Planetary Astrophysics',
