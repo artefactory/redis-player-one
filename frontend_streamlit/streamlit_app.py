@@ -34,7 +34,7 @@ def create_query(
     return Query(base_query)\
         .sort_by("vector_score")\
         .paging(0, number_of_results)\
-        .return_fields("paper_id", "paper_pk", "vector_score", "year")\
+        .return_fields("paper_id", "vector_score", "year", "title", "abstract")\
         .dialect(2)
 
 
@@ -55,11 +55,11 @@ def submit_text(text: str, date_range: list, nb_articles: int):
 
 def plot_results(results):
     values_to_plot = []
-    for i, p in enumerate(results.docs):
+    for i, paper in enumerate(results.docs):
         values_to_plot.append(
             {
-                "year": p.year,
-                "similarity_score": 1 - float(p.vector_score),
+                "year": paper.year,
+                "similarity_score": 1 - float(paper.vector_score),
             }
         )
     st.line_chart(values_to_plot, x="year", y="similarity_score")
@@ -82,21 +82,19 @@ def app():
             end_time = time.time()
         st.sidebar.success(f"Found {nb_articles} abstracts in {round(end_time - start_time, 2)} seconds!")
         if results:
-            for i, p in enumerate(results.docs):
-                paper_abstract = redis_client.hget(f":vecsim_app.models.Paper:{p.paper_pk}", "abstract")
-                paper_title = redis_client.hget(f":vecsim_app.models.Paper:{p.paper_pk}", "title")
+            for i, paper in enumerate(results.docs):
                 col1, col2 = st.columns([3, 1])
                 with col1:
-                    st.markdown(f'<h2 style="color:#2892D7;font-size:24px;">Abstract #{i + 1} - {paper_title.decode("utf-8")}</h1>',
+                    st.markdown(f'<h2 style="color:#2892D7;font-size:24px;">Abstract #{i + 1} - {paper.title}</h1>',
                                 unsafe_allow_html=True)
-                    st.write(paper_abstract.decode("utf-8"))
+                    st.write(paper.abstract)
                 with col2:
                     st.markdown('<h2 style="color:#ff0000;font-size:24px;">Similarity score</h1>',
                                 unsafe_allow_html=True)
-                    st.write(f"{round(100*(1 - float(p.vector_score)), 1)}%")
+                    st.write(f"{round(100*(1 - float(paper.vector_score)), 1)}%")
                     st.markdown('<h2 style="color:#ff0000;font-size:24px;">Link to the article</h1>',
                                 unsafe_allow_html=True)
-                    st.write(f"https://arxiv.org/abs/{p.paper_id}")
+                    st.write(f"https://arxiv.org/abs/{paper.id}")
                 st.markdown("""---""")
 
 
