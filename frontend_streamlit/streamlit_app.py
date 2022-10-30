@@ -90,7 +90,7 @@ def app():
             start_time = time.time()
             results = submit_text(
                 text=user_text,
-                date_range=list(map(str, list((range(*date_range))))),
+                date_range=list(map(str, list((range(date_range[0], date_range[1] + 1))))),
                 nb_articles=nb_articles
             )
             end_time = time.time()
