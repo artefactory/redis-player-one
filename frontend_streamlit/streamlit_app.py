@@ -55,8 +55,7 @@ def submit_text(text: str, date_range: list, nb_articles: int):
 
 def app():
     user_text = st.text_input(label="Enter some text here 👇", value="", max_chars=2000, key="user_text_input")
-    nb_articles = st.number_input("Insert the number of simillar articles to retrieve", step=1)
-    nb_articles = max(0, nb_articles)
+    nb_articles = st.number_input("Insert the number of simillar articles to retrieve", step=1, min_value=0)
     date_range = st.slider('Select a range of dates', 2015, 2022, (2016, 2019))
     clicked = st.button('Submit')
     if clicked and user_text and nb_articles > 0:
@@ -76,14 +75,14 @@ def app():
                 paper_title = redis_client.hget(f":vecsim_app.models.Paper:{p.paper_pk}", "title")
                 col1, col2 = st.columns([3, 1])
                 with col1:
-                    st.markdown(f'<h2 style="color:#09bfb8;font-size:24px;">Abstract #{i + 1} - {paper_title.decode("utf-8")}</h1>',
+                    st.markdown(f'<h2 style="color:#2892D7;font-size:24px;">Abstract #{i + 1} - {paper_title.decode("utf-8")}</h1>',
                                 unsafe_allow_html=True)
                     st.write(paper_abstract.decode("utf-8"))
                 with col2:
-                    st.markdown('<h2 style="color:#f34433;font-size:24px;">Similarity score</h1>',
+                    st.markdown('<h2 style="color:#ff0000;font-size:24px;">Similarity score</h1>',
                                 unsafe_allow_html=True)
-                    st.write(p.vector_score)
-                    st.markdown('<h2 style="color:#f34433;font-size:24px;">Link to the article</h1>',
+                    st.write(f"{round(100*(1 - float(p.vector_score)), 1)}%")
+                    st.markdown('<h2 style="color:#ff0000;font-size:24px;">Link to the article</h1>',
                                 unsafe_allow_html=True)
                     st.write(f"https://arxiv.org/abs/{p.paper_id}")
                 st.markdown("""---""")
