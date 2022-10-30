@@ -1,19 +1,14 @@
-import uvicorn
 from pathlib import Path
-from aredis_om import (
-    get_redis_connection,
-    Migrator
-)
 
+import uvicorn
+from aredis_om import Migrator, get_redis_connection
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
-
 from vecsim_app import config
-from vecsim_app.models import Paper
 from vecsim_app.api import routes
+from vecsim_app.models import Paper
 from vecsim_app.spa import SinglePageApplication
-
 
 app = FastAPI(
     title=config.PROJECT_NAME,

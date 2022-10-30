@@ -1,16 +1,12 @@
 import typing as t
+
 import redis.asyncio as redis
 import vecsim_app.embeddings as embeddings
-
 from fastapi import APIRouter
 from vecsim_app import config
 from vecsim_app.models import Paper
-from vecsim_app.schema import (
-    SimilarityRequest,
-    UserTextSimilarityRequest
-)
 from vecsim_app.query import create_query
-
+from vecsim_app.schema import SimilarityRequest, UserTextSimilarityRequest
 
 paper_router = r = APIRouter()
 redis_client = redis.from_url(config.REDIS_URL)

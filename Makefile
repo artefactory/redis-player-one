@@ -35,3 +35,18 @@ env:
 .PHONY: run_app
 run_app:
 	@PYTHONPATH=. streamlit run frontend_streamlit/streamlit_app.py
+
+
+.PHONY: run_linter
+run_linter:
+	@echo "Running linter"
+	@isort .
+	@flake8 .
+
+
+.PHONY: install_requirements
+install_requirements:
+	@echo "Initialization: Installing pip-tools and requirements"
+	@pip install pip-tools==6.6.2
+	@pip-compile requirements.in
+	@pip install -r requirements.txt

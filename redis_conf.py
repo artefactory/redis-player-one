@@ -13,5 +13,3 @@ missing = [env_var.lstrip("NONE__") for env_var in [REDIS_HOST, REDIS_PORT, REDI
            if env_var.startswith("NONE__")]
 if missing:
     raise RuntimeError(f"The following env variables haven't been set : {missing}")
-
-

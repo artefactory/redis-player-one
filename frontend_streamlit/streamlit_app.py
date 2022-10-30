@@ -1,14 +1,10 @@
-import sys
-
-import streamlit as st
 import numpy as np
+import streamlit as st
 from redis.commands.search.query import Query
 
-sys.path.insert(0, "backend/vecsim_app")
-import backend.vecsim_app.embeddings as embeddings
-from redis_player_one.redis_client import redis_client
+from backend.vecsim_app.embeddings import make as make_embeddings
 from redis_conf import INDEX_NAME
-
+from redis_player_one.redis_client import redis_client
 
 st.title('Redis Player One - Similarity Search Engine')
 
@@ -47,7 +43,7 @@ def submit_text(text: str, date_range: list, nb_articles: int):
                      number_of_results=nb_articles)
 
     # Vectorize the query
-    query_vector = embeddings.make(text).astype(np.float32).tobytes()
+    query_vector = make_embeddings(text).astype(np.float32).tobytes()
     params_dict = {"vec_param": query_vector}
 
     # Execute the query
