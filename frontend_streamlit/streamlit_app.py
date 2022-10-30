@@ -36,7 +36,7 @@ def create_query(
     return Query(base_query)\
         .sort_by("vector_score")\
         .paging(0, number_of_results)\
-        .return_fields("paper_id", "paper_pk", "vector_score")\
+        .return_fields("paper_id", "vector_score", "year", "title", "abstract")\
         .dialect(2)
 
 
@@ -71,15 +71,13 @@ def app():
                               nb_articles=nb_articles)
         if results:
             for i, paper in enumerate(results.docs):
-                #paper_abstract = redis_client.hget(f":vecsim_app.models.Paper:{p.paper_pk}", "abstract")
-                #paper_title = redis_client.hget(f":vecsim_app.models.Paper:{p.paper_pk}", "title")
                 paper_abstract = paper.abstract
                 paper_title = paper.title
                 col1, col2 = st.columns([3, 1])
                 with col1:
-                    st.markdown(f'<h2 style="color:#09bfb8;font-size:24px;">Abstract #{i + 1} - {paper_title.decode("utf-8")}</h1>',
+                    st.markdown(f'<h2 style="color:#09bfb8;font-size:24px;">Abstract #{i + 1} - {paper_title}</h1>',
                                 unsafe_allow_html=True)
-                    st.write(paper_abstract.decode("utf-8"))
+                    st.write(paper_abstract)
                 with col2:
                     st.markdown('<h2 style="color:#f34433;font-size:24px;">Similarity score</h1>',
                                 unsafe_allow_html=True)
