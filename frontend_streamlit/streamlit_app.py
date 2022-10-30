@@ -5,10 +5,10 @@ import streamlit as st
 from redis.commands.search.query import Query
 
 from config.redis_config import INDEX_NAME, SEARCH_TYPE
-from redis_player_one.redis_client import redis_client
 from redis_player_one.embedder import make_embeddings
+from redis_player_one.redis_client import redis_client
 
-st.title('Redis Player One - Similarity Search Engine')
+st.sidebar.title('Redis Player One - Similarity Search Engine')
 
 
 def create_query(
@@ -34,7 +34,7 @@ def create_query(
     return Query(base_query)\
         .sort_by("vector_score")\
         .paging(0, number_of_results)\
-        .return_fields("paper_id", "paper_pk", "vector_score")\
+        .return_fields("paper_id", "paper_pk", "vector_score", "year")\
         .dialect(2)
 
 
@@ -53,11 +53,23 @@ def submit_text(text: str, date_range: list, nb_articles: int):
     return results
 
 
+def plot_results(results):
+    values_to_plot = []
+    for i, p in enumerate(results.docs):
+        values_to_plot.append(
+            {
+                "year": p.year,
+                "similarity_score": 1 - float(p.vector_score),
+            }
+        )
+    st.line_chart(values_to_plot, x="year", y="similarity_score")
+
+
 def app():
-    user_text = st.text_input(label="Enter some text here 👇", value="", max_chars=2000, key="user_text_input")
-    nb_articles = st.number_input("Insert the number of simillar articles to retrieve", step=1, min_value=0)
-    date_range = st.slider('Select a range of dates', 2015, 2022, (2016, 2019))
-    clicked = st.button('Submit')
+    user_text = st.sidebar.text_input(label="Enter some text here 👇", value="", max_chars=2000, key="user_text_input")
+    nb_articles = st.sidebar.number_input("Insert the number of simillar articles to retrieve", step=1, min_value=0)
+    date_range = st.sidebar.slider('Select a range of dates', 2015, 2022, (2016, 2019))
+    clicked = st.sidebar.button('Submit')
     if clicked and user_text and nb_articles > 0:
         st.write("You entered: ", user_text)
         with st.spinner("Computing similarity research"):
@@ -68,7 +80,7 @@ def app():
                 nb_articles=nb_articles
             )
             end_time = time.time()
-        st.success(f"Found {nb_articles} abstracts in {round(end_time - start_time, 2)} seconds!")
+        st.sidebar.success(f"Found {nb_articles} abstracts in {round(end_time - start_time, 2)} seconds!")
         if results:
             for i, p in enumerate(results.docs):
                 paper_abstract = redis_client.hget(f":vecsim_app.models.Paper:{p.paper_pk}", "abstract")
