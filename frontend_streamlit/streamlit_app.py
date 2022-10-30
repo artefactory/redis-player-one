@@ -94,7 +94,7 @@ def app():
                     st.write(f"{round(100*(1 - float(paper.vector_score)), 1)}%")
                     st.markdown('<h2 style="color:#ff0000;font-size:24px;">Link to the article</h1>',
                                 unsafe_allow_html=True)
-                    st.write(f"https://arxiv.org/abs/{paper.id}")
+                    st.write(f"https://arxiv.org/abs/{paper.id.replace('paper_vector:', '')}")
                 st.markdown("""---""")
 
 
