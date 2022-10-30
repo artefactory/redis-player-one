@@ -6,3 +6,6 @@ data/arxiv-metadata-oai-snapshot.json
 
 # ignore node_modules
 *node_modules
+
+# ignore credentials folder
+credentials

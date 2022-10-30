@@ -1,4 +1,1 @@
-from .search import (
-    SimilarityRequest,
-    UserTextSimilarityRequest
-)
+from .search import SimilarityRequest, UserTextSimilarityRequest

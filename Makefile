@@ -23,7 +23,40 @@ help:
 env:
 	@conda create -n arXiv python=3.9 -y
 	$(CONDA_ACTIVATE) arXiv
-	@cd backend/ && pip install -r requirements.txt
+	@backend/ \
+	&& python -m pip install -r requirements.txt \
+	&& python -m pip install -r frontend_streamlit/requirements.txt
 
 # help:
+# help: Run streamlit app
+# help: -------------
+
+# help: run_app                      - runs the streamlit app
+.PHONY: run_app
+run_app:
+	@PYTHONPATH=. streamlit run frontend_streamlit/streamlit_app.py
+
+
+
 # help:
+# help: Run linter
+# help: -------------
+
+# help: run_linter                      - lint code
+.PHONY: run_linter
+run_linter:
+	@echo "Running linter"
+	@isort .
+	@flake8 .
+
+# help:
+# help: Install requirements
+# help: -------------
+
+# help: install_requirements                      - install requirements
+.PHONY: install_requirements
+install_requirements:
+	@echo "Initialization: Installing pip-tools and requirements"
+	@python -m pip install pip-tools==6.6.2
+	@pip-compile requirements.in
+	@python -m pip install -r requirements.txt
