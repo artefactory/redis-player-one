@@ -45,8 +45,7 @@ def create_query(
                        "update_date",
                        "journal-ref",
                        "submitter",
-                       "doi",
-                       "")\
+                       "doi")\
         .dialect(2)
 
 
