@@ -4,9 +4,9 @@ import numpy as np
 import streamlit as st
 from redis.commands.search.query import Query
 
-from backend.vecsim_app.embeddings import make as make_embeddings
 from config.redis_config import INDEX_NAME, SEARCH_TYPE
 from redis_player_one.redis_client import redis_client
+from redis_player_one.embedder import make_embeddings
 
 st.title('Redis Player One - Similarity Search Engine')
 
