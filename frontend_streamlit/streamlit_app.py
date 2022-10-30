@@ -70,9 +70,11 @@ def app():
                               date_range=list(map(str, list((range(*date_range))))),
                               nb_articles=nb_articles)
         if results:
-            for i, p in enumerate(results.docs):
-                paper_abstract = redis_client.hget(f":vecsim_app.models.Paper:{p.paper_pk}", "abstract")
-                paper_title = redis_client.hget(f":vecsim_app.models.Paper:{p.paper_pk}", "title")
+            for i, paper in enumerate(results.docs):
+                #paper_abstract = redis_client.hget(f":vecsim_app.models.Paper:{p.paper_pk}", "abstract")
+                #paper_title = redis_client.hget(f":vecsim_app.models.Paper:{p.paper_pk}", "title")
+                paper_abstract = paper.abstract
+                paper_title = paper.title
                 col1, col2 = st.columns([3, 1])
                 with col1:
                     st.markdown(f'<h2 style="color:#09bfb8;font-size:24px;">Abstract #{i + 1} - {paper_title.decode("utf-8")}</h1>',
@@ -81,10 +83,10 @@ def app():
                 with col2:
                     st.markdown('<h2 style="color:#f34433;font-size:24px;">Similarity score</h1>',
                                 unsafe_allow_html=True)
-                    st.write(p.vector_score)
+                    st.write(paper.vector_score)
                     st.markdown('<h2 style="color:#f34433;font-size:24px;">Link to the article</h1>',
                                 unsafe_allow_html=True)
-                    st.write(f"https://arxiv.org/abs/{p.paper_id}")
+                    st.write(f"https://arxiv.org/abs/{paper.id}")
                 st.markdown("""---""")
 
 
