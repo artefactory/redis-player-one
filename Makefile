@@ -59,4 +59,4 @@ install_requirements:
 	@echo "Initialization: Installing pip-tools and requirements"
 	@python -m pip install pip-tools==6.6.2
 	@pip-compile requirements.in
-	@python -m install -r requirements.txt
+	@python -m pip install -r requirements.txt
