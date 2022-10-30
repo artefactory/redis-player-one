@@ -83,13 +83,11 @@ def app():
         st.sidebar.success(f"Found {nb_articles} abstracts in {round(end_time - start_time, 2)} seconds!")
         if results:
             for i, paper in enumerate(results.docs):
-                paper_abstract = paper.abstract
-                paper_title = paper.title
                 col1, col2 = st.columns([3, 1])
                 with col1:
-                    st.markdown(f'<h2 style="color:#2892D7;font-size:24px;">Abstract #{i + 1} - {paper_title}</h1>',
+                    st.markdown(f'<h2 style="color:#2892D7;font-size:24px;">Abstract #{i + 1} - {paper.title}</h1>',
                                 unsafe_allow_html=True)
-                    st.write(paper_abstract)
+                    st.write(paper.abstract)
                 with col2:
                     st.markdown('<h2 style="color:#ff0000;font-size:24px;">Similarity score</h1>',
                                 unsafe_allow_html=True)
