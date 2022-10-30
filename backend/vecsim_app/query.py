@@ -1,8 +1,9 @@
-from config import INDEX_NAME
 from redis.asyncio import Redis
 from redis.commands.search.field import TagField, VectorField
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from redis.commands.search.query import Query
+
+from config import INDEX_NAME
 
 
 async def create_index(redis_conn, prefix: str, v_field: VectorField):

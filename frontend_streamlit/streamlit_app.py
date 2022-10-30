@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 import streamlit as st
 from redis.commands.search.query import Query
@@ -55,16 +57,19 @@ def app():
     user_text = st.text_input(label="Enter some text here 👇", value="", max_chars=2000, key="user_text_input")
     nb_articles = st.number_input("Insert the number of simillar articles to retrieve", step=1)
     nb_articles = max(0, nb_articles)
-    date_range = st.slider('Select a range of dates',
-                           2015, 2022,
-                           (2016, 2019))
+    date_range = st.slider('Select a range of dates', 2015, 2022, (2016, 2019))
     clicked = st.button('Submit')
     if clicked and user_text and nb_articles > 0:
         st.write("You entered: ", user_text)
-        st.write('Computing...')
-        results = submit_text(text=user_text,
-                              date_range=list(map(str, list((range(*date_range))))),
-                              nb_articles=nb_articles)
+        with st.spinner("Computing similarity research"):
+            start_time = time.time()
+            results = submit_text(
+                text=user_text,
+                date_range=list(map(str, list((range(*date_range))))),
+                nb_articles=nb_articles
+            )
+            end_time = time.time()
+        st.success(f"Found {nb_articles} abstracts in {round(end_time - start_time, 2)} seconds!")
         if results:
             for i, p in enumerate(results.docs):
                 paper_abstract = redis_client.hget(f":vecsim_app.models.Paper:{p.paper_pk}", "abstract")
