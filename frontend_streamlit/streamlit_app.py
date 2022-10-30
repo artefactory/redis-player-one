@@ -72,15 +72,19 @@ def app():
         if results:
             for i, p in enumerate(results.docs):
                 paper_abstract = redis_client.hget(f":vecsim_app.models.Paper:{p.paper_pk}", "abstract")
+                paper_title = redis_client.hget(f":vecsim_app.models.Paper:{p.paper_pk}", "title")
                 col1, col2 = st.columns([3, 1])
                 with col1:
-                    st.markdown(f'<h2 style="color:#09bfb8;font-size:24px;">Abstract #{i + 1}</h1>',
+                    st.markdown(f'<h2 style="color:#09bfb8;font-size:24px;">Abstract #{i + 1} - {paper_title.decode("utf-8")}</h1>',
                                 unsafe_allow_html=True)
                     st.write(paper_abstract.decode("utf-8"))
                 with col2:
                     st.markdown('<h2 style="color:#f34433;font-size:24px;">Similarity score</h1>',
                                 unsafe_allow_html=True)
                     st.write(p.vector_score)
+                    st.markdown('<h2 style="color:#f34433;font-size:24px;">Link to the article</h1>',
+                                unsafe_allow_html=True)
+                    st.write(f"https://arxiv.org/abs/{p.paper_id}")
                 st.markdown("""---""")
 
 
