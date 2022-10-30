@@ -1,22 +1,20 @@
-import sys
+import time
 
-import streamlit as st
 import numpy as np
+import streamlit as st
 from redis.commands.search.query import Query
 
-sys.path.insert(0, "backend/vecsim_app")
-import backend.vecsim_app.embeddings as embeddings
+from config.redis_config import INDEX_NAME, SEARCH_TYPE
+from redis_player_one.embedder import make_embeddings
 from redis_player_one.redis_client import redis_client
-from redis_conf import INDEX_NAME
 
-
-st.title('Redis Player One - Similarity Search Engine')
+st.sidebar.title('Redis Player One - Similarity Search Engine')
 
 
 def create_query(
     categories: list,
     years: list,
-    search_type: str = "KNN",
+    search_type: str = SEARCH_TYPE,
     number_of_results: int = 10
 ) -> Query:
 
@@ -43,11 +41,11 @@ def create_query(
 def submit_text(text: str, date_range: list, nb_articles: int):
     q = create_query(categories=None,
                      years=date_range,
-                     search_type="KNN",
+                     search_type=SEARCH_TYPE,
                      number_of_results=nb_articles)
 
     # Vectorize the query
-    query_vector = embeddings.make(text).astype(np.float32).tobytes()
+    query_vector = make_embeddings(text).astype(np.float32).tobytes()
     params_dict = {"vec_param": query_vector}
 
     # Execute the query
@@ -55,34 +53,48 @@ def submit_text(text: str, date_range: list, nb_articles: int):
     return results
 
 
+def plot_results(results):
+    values_to_plot = []
+    for i, paper in enumerate(results.docs):
+        values_to_plot.append(
+            {
+                "year": paper.year,
+                "similarity_score": 1 - float(paper.vector_score),
+            }
+        )
+    st.line_chart(values_to_plot, x="year", y="similarity_score")
+
+
 def app():
-    user_text = st.text_input(label="Enter some text here 👇", value="", max_chars=2000, key="user_text_input")
-    nb_articles = st.number_input("Insert the number of simillar articles to retrieve", step=1)
-    nb_articles = max(0, nb_articles)
-    date_range = st.slider('Select a range of dates',
-                           2015, 2022,
-                           (2016, 2019))
-    clicked = st.button('Submit')
+    user_text = st.sidebar.text_input(label="Enter some text here 👇", value="", max_chars=2000, key="user_text_input")
+    nb_articles = st.sidebar.number_input("Insert the number of simillar articles to retrieve", step=1, min_value=0)
+    date_range = st.sidebar.slider('Select a range of dates', 2015, 2022, (2016, 2019))
+    clicked = st.sidebar.button('Submit')
     if clicked and user_text and nb_articles > 0:
         st.write("You entered: ", user_text)
-        st.write('Computing...')
-        results = submit_text(text=user_text,
-                              date_range=list(map(str, list((range(*date_range))))),
-                              nb_articles=nb_articles)
+        with st.spinner("Computing similarity research"):
+            start_time = time.time()
+            results = submit_text(
+                text=user_text,
+                date_range=list(map(str, list((range(*date_range))))),
+                nb_articles=nb_articles
+            )
+            end_time = time.time()
+        st.sidebar.success(f"Found {nb_articles} abstracts in {round(end_time - start_time, 2)} seconds!")
         if results:
             for i, paper in enumerate(results.docs):
                 paper_abstract = paper.abstract
                 paper_title = paper.title
                 col1, col2 = st.columns([3, 1])
                 with col1:
-                    st.markdown(f'<h2 style="color:#09bfb8;font-size:24px;">Abstract #{i + 1} - {paper_title}</h1>',
+                    st.markdown(f'<h2 style="color:#2892D7;font-size:24px;">Abstract #{i + 1} - {paper_title}</h1>',
                                 unsafe_allow_html=True)
                     st.write(paper_abstract)
                 with col2:
-                    st.markdown('<h2 style="color:#f34433;font-size:24px;">Similarity score</h1>',
+                    st.markdown('<h2 style="color:#ff0000;font-size:24px;">Similarity score</h1>',
                                 unsafe_allow_html=True)
-                    st.write(paper.vector_score)
-                    st.markdown('<h2 style="color:#f34433;font-size:24px;">Link to the article</h1>',
+                    st.write(f"{round(100*(1 - float(paper.vector_score)), 1)}%")
+                    st.markdown('<h2 style="color:#ff0000;font-size:24px;">Link to the article</h1>',
                                 unsafe_allow_html=True)
                     st.write(f"https://arxiv.org/abs/{paper.id}")
                 st.markdown("""---""")

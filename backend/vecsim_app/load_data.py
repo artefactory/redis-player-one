@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
-import typing as t
-import json
 import asyncio
-import numpy as np
+import json
 import pickle
-import redis.asyncio as redis
+import typing as t
 
+import numpy as np
+import redis.asyncio as redis
 from vecsim_app import config
 from vecsim_app.models import Paper
-from vecsim_app.query import (
-    create_flat_index,
-    create_hnsw_index
-)
+from vecsim_app.query import create_flat_index, create_hnsw_index
+
 
 def read_paper_df() -> t.List:
     with open(config.DATA_LOCATION + "/arxiv_embeddings_10000.pkl", "rb") as f:
