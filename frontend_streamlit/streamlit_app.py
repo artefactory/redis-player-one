@@ -3,7 +3,7 @@ import streamlit as st
 from redis.commands.search.query import Query
 
 from backend.vecsim_app.embeddings import make as make_embeddings
-from redis_conf import INDEX_NAME
+from config.redis_config import INDEX_NAME, SEARCH_TYPE
 from redis_player_one.redis_client import redis_client
 
 st.title('Redis Player One - Similarity Search Engine')
@@ -12,7 +12,7 @@ st.title('Redis Player One - Similarity Search Engine')
 def create_query(
     categories: list,
     years: list,
-    search_type: str = "KNN",
+    search_type: str = SEARCH_TYPE,
     number_of_results: int = 10
 ) -> Query:
 
@@ -39,7 +39,7 @@ def create_query(
 def submit_text(text: str, date_range: list, nb_articles: int):
     q = create_query(categories=None,
                      years=date_range,
-                     search_type="KNN",
+                     search_type=SEARCH_TYPE,
                      number_of_results=nb_articles)
 
     # Vectorize the query
