@@ -10,8 +10,8 @@ from redis_player_one.embedder import make_embeddings
 from redis_player_one.redis_client import redis_client
 
 
-st.set_page_config(page_title="Redis Player One", 
-                   page_icon="https://cdn4.iconfinder.com/data/icons/redis-2/1451/Untitled-2-512.png", 
+st.set_page_config(page_title="Redis Player One",
+                   page_icon="https://cdn4.iconfinder.com/data/icons/redis-2/1451/Untitled-2-512.png",
                    layout='wide')
 
 st.sidebar.title('Redis Player One - Similarity Search Engine')
