@@ -5,8 +5,14 @@ import streamlit as st
 from redis.commands.search.query import Query
 
 from config.redis_config import INDEX_NAME, SEARCH_TYPE
+from data.categories import CAT_TO_DEFINITION_MAP
 from redis_player_one.embedder import make_embeddings
 from redis_player_one.redis_client import redis_client
+
+
+st.set_page_config(page_title="Redis Player One",
+                   page_icon="https://cdn4.iconfinder.com/data/icons/redis-2/1451/Untitled-2-512.png",
+                   layout='wide')
 
 st.sidebar.title('Redis Player One - Similarity Search Engine')
 
@@ -34,7 +40,17 @@ def create_query(
     return Query(base_query)\
         .sort_by("vector_score")\
         .paging(0, number_of_results)\
-        .return_fields("paper_id", "vector_score", "year", "title", "abstract")\
+        .return_fields("paper_id",
+                       "vector_score",
+                       "year",
+                       "title",
+                       "authors",
+                       "abstract",
+                       "categories",
+                       "update_date",
+                       "journal-ref",
+                       "submitter",
+                       "doi")\
         .dialect(2)
 
 
@@ -71,12 +87,15 @@ def app():
     date_range = st.sidebar.slider('Select a range of dates', 2015, 2022, (2016, 2019))
     clicked = st.sidebar.button('Submit')
     if clicked and user_text and nb_articles > 0:
-        st.write("You entered: ", user_text)
+        st.markdown(f'<h2 style="color:#FFFFFF;font-size:30px;">You\'ve entered: <br><em>\"{user_text}\"</em></h1>',
+                    unsafe_allow_html=True)
+        st.markdown("""---""")
+
         with st.spinner("Computing similarity research"):
             start_time = time.time()
             results = submit_text(
                 text=user_text,
-                date_range=list(map(str, list((range(*date_range))))),
+                date_range=list(map(str, list((range(date_range[0], date_range[1] + 1))))),
                 nb_articles=nb_articles
             )
             end_time = time.time()
@@ -89,12 +108,33 @@ def app():
                                 unsafe_allow_html=True)
                     st.write(paper.abstract)
                 with col2:
-                    st.markdown('<h2 style="color:#ff0000;font-size:24px;">Similarity score</h1>',
+                    similarity_score_str = f"{round(100*(1 - float(paper.vector_score)), 1)}%"
+                    st.markdown('<h2 style="color:#F71735;font-size:24px;"><u>Similarity score:</u></h2>',
                                 unsafe_allow_html=True)
-                    st.write(f"{round(100*(1 - float(paper.vector_score)), 1)}%")
-                    st.markdown('<h2 style="color:#ff0000;font-size:24px;">Link to the article</h1>',
+                    st.markdown(f'<h2 style="color:#FFFFFF;font-size:24px;">📊 {similarity_score_str}</h2>',
                                 unsafe_allow_html=True)
-                    st.write(f"https://arxiv.org/abs/{paper.id}")
+
+                    st.markdown('<h1 style="color:#F71735;font-size:16px;"><u>Link to the article</u></h1>',
+                                unsafe_allow_html=True)
+                    st.write(f"🔗 https://arxiv.org/abs/{paper.paper_id}")
+
+                    if paper.update_date:
+                        st.markdown('<h1 style="color:#F71735;font-size:14px;"><u>Updated on:</u></h1>',
+                                    unsafe_allow_html=True)
+                        st.markdown(f'<h1 style="color:#FFFFF;font-size:14px;">📆 {paper.update_date}</h1>',
+                                    unsafe_allow_html=True)
+
+                    if paper.categories:
+                        cats_list = paper.categories.split(",")
+                        def_list = sorted(set(map(lambda x: CAT_TO_DEFINITION_MAP[x], cats_list)))
+                        def_list[0] = f'✅ {def_list[0]}'
+                        def_str = '<br>✅ '.join(def_list)
+                    else:
+                        def_str = "Unknown categories"
+                    st.markdown('<h1 style="color:#F71735;font-size:14px;"><u>Categories:</u></h1>',
+                                unsafe_allow_html=True)
+                    st.markdown(f'<h1 style="color:#FFFFFF;font-size:14px;">{def_str}</h1>',
+                                unsafe_allow_html=True)
                 st.markdown("""---""")
 
 
