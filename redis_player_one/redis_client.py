@@ -17,5 +17,5 @@ def retrieve_paper(r_client, key):
         "title": title,
         "authors": authors,
         "year": year,
-        "paper_id": paper_id
+        "paper_id": paper_id,
     }
