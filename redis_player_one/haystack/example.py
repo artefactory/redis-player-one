@@ -13,7 +13,7 @@ document_store = RedisDocumentStore(host=REDIS_HOST, port=REDIS_PORT, password=R
 #     embedding_model="sentence-transformers/all-mpnet-base-v2",
 #     model_format="sentence_transformers")
 retriever = BM25Retriever(document_store=document_store)
-reader = FARMReader(model_name_or_path="deepset/roberta-base-squad2", use_gpu=False, context_window_size=1500)
+reader = FARMReader(model_name_or_path="deepset/roberta-base-squad2", use_gpu=False, context_window_size=2000)
 pipe = ExtractiveQAPipeline(reader, retriever)
 prediction = pipe.run(
     query="What are the main causes of road accidents and traffic jam ?",
