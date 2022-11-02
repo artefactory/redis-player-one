@@ -154,7 +154,7 @@ def submit_text(text: str, date_range: list, nb_articles: int):
     results = pipe.run(
         query=text,
         params={
-            "Retriever": {"top_k": 100, "filters": {"date_range": date_range, "nb_articles": nb_articles}},
+            "Retriever": {"top_k": 10, "filters": {"date_range": date_range, "nb_articles": nb_articles}},
             "Reader": {"top_k": 10}},
         debug=True)
     return results
@@ -184,7 +184,8 @@ def app_qa():
             end_time = time.time()
         st.sidebar.success(f"Found {len(results['answers'])} abstracts in {round(end_time - start_time, 2)} seconds!")
         if results:
-            for i, paper in enumerate(results["answers"]):
+            answers = sorted(results["answers"], key=lambda x: x.score, reverse=False)
+            for i, paper in enumerate(answers):
                 col1, col2 = st.columns([3, 1])
                 with col1:
                     st.markdown(f'<h2 style="color:#2892D7;font-size:24px;">Abstract #{i + 1} - {paper.meta["title"]}</h1>',
@@ -192,10 +193,9 @@ def app_qa():
                     abstact_str = paper.context
                     start, end = paper.offsets_in_document[0].start, paper.offsets_in_document[0].end
 
-                    abstact_str.insert(start, "<b>")
-                    abstact_str.insert(end + len("<b>"), "</b>")
+                    abstact_str = f'{abstact_str[:start]}<b style="background-color:#FFFF00;color:#4C4C4C;">{abstact_str[start:end]}</b>{abstact_str[end:]}'
 
-                    st.markdown(f'<h2 style="color:#F71735;font-size:24px;">{abstact_str}</h2>',
+                    st.markdown(f'<p style="color:#FFF;font-size:24px;">{abstact_str}</p>',
                                 unsafe_allow_html=True)
 
                 with col2:
