@@ -2,6 +2,7 @@ streamlit==1.14.0
 watchdog==2.1.9
 redis==4.3.4
 sentence-transformers==2.2.2
+farm-haystack==1.10.0
 
 #Dev
 flake8==5.0.4
