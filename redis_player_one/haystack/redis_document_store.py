@@ -184,13 +184,11 @@ class RedisDocumentStore(SearchEngineDocumentStore):
     ) -> List[Document]:
         if index is None:
             index = self.index
+        date_range = list(map(str, list((range(2016, 2023)))))
+        nb_articles = 10
         if isinstance(filters, dict):
-            date_range = filters.get("date_range")
-            nb_articles = filters.get("nb_articles")
-        else:
-            # TODO: add config
-            date_range = list(map(str, list((range(2016, 2023)))))
-            nb_articles = 10
+            date_range = filters.get("date_range", date_range)
+            nb_articles = filters.get("nb_articles", nb_articles)
         results = self.query_by_embedding(query, date_range, nb_articles)
 
         documents = [self.convert_hit_to_document(hit) for hit in results.docs]
@@ -202,10 +200,10 @@ class RedisDocumentStore(SearchEngineDocumentStore):
         doc_dict = {
             "id": paper.paper_id,
             "content": paper.abstract,
-            "content_type": "text",  # TODO: update with content type value from redis
+            "content_type": "text",
             "meta": meta_data,
             "score": paper.vector_score,
-            "embedding": None,  # TODO: update with embedding value from redis
+            "embedding": None,
         }
         document = Document.from_dict(doc_dict)
         return document
