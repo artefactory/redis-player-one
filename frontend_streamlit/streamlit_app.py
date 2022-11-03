@@ -98,8 +98,8 @@ def submit_text(pipe, text: str, date_range: list, nb_articles: int):
     results = pipe.run(
         query=text,
         params={
-            "Retriever": {"top_k": 10, "filters": {"date_range": date_range, "nb_articles": nb_articles}},
-            "Reader": {"top_k": 10}},
+            "Retriever": {"top_k": nb_articles, "filters": {"date_range": date_range}},
+            "Reader": {"top_k": nb_articles}},
         debug=True)
     return results
 
