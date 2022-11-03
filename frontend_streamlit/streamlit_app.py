@@ -1,4 +1,5 @@
 import time
+import torch
 from unittest import result
 
 import numpy as np
@@ -10,7 +11,7 @@ from haystack.nodes.reader.farm import FARMReader
 from haystack.pipelines import ExtractiveQAPipeline
 
 from redis_player_one.haystack.redis_document_store import RedisDocumentStore
-from config.redis_config import INDEX_NAME, SEARCH_TYPE, REDIS_HOST, REDIS_PORT, REDIS_PASSWORD, ROOT_PATH
+from config.redis_config import INDEX_NAME, SEARCH_TYPE, REDIS_HOST, REDIS_PORT, REDIS_PASSWORD, ROOT_PATH, TOP_K_READER, TOP_K_RETRIEVER
 from data.categories import CAT_TO_DEFINITION_MAP
 from redis_player_one.embedder import make_embeddings
 from redis_player_one.redis_client import redis_client
@@ -22,10 +23,10 @@ def instanciate_retriever():
         document_store = RedisDocumentStore(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD)
         retriever = EmbeddingRetriever(
             document_store=document_store,
-            embedding_model="sentence-transformers/multi-qa-mpnet-base-dot-v1",
+            embedding_model="sentence-transformers/all-mpnet-base-v2",
             model_format="sentence_transformers",
         )     
-        reader = FARMReader(model_name_or_path="deepset/roberta-base-squad2", use_gpu=False, context_window_size=2000)
+        reader = FARMReader(model_name_or_path="deepset/roberta-base-squad2", use_gpu=torch.cuda.is_available(), context_window_size=2000)
         pipe = ExtractiveQAPipeline(reader, retriever)
     return pipe
 
@@ -95,12 +96,12 @@ def plot_results(results):
     st.line_chart(values_to_plot, x="year", y="similarity_score")
 
 
-def submit_text(pipe, text: str, date_range: list, nb_articles: int):
+def submit_text(pipe, text: str, date_range: list):
     results = pipe.run(
         query=text,
         params={
-            "Retriever": {"top_k": nb_articles, "filters": {"date_range": date_range}},
-            "Reader": {"top_k": nb_articles}},
+            "Retriever": {"top_k": TOP_K_RETRIEVER, "filters": {"date_range": date_range}},
+            "Reader": {"top_k": TOP_K_READER}},
         debug=True)
     return results
 
@@ -128,9 +129,7 @@ def app():
     with st.form(key="content_section"):
         with st.sidebar:
             user_question = st.text_input(label="Enter your question here 👇", max_chars=2000, key="user_question_input")
-            nb_articles = st.number_input(
-                label="Insert the number of simillar articles to retrieve", value=10, step=1, min_value=1)
-            date_range = st.slider('Select a range of dates', 2015, 2022, (2016, 2019))    # TODO: avoid hardcoding the date range if possible
+            date_range = st.slider('Select a range of dates', 2015, 2022, (2016, 2022))    # TODO: avoid hardcoding the date range if possible
             st.form_submit_button('Submit', on_click=button_callback, kwargs={"name": "button1"})
 
     if st.session_state["button1"]:
@@ -146,9 +145,7 @@ def app():
                 results = submit_text(
                     pipe=pipe,
                     text=user_question,
-                    date_range=list(map(str, list((range(date_range[0], date_range[1] + 1))))),
-                    nb_articles=nb_articles
-                )
+                    date_range=list(map(str, list((range(date_range[0], date_range[1] + 1)))))                )
                 end_time = time.time()
             st.sidebar.success(f"Found {len(results['answers'])} abstracts in {round(end_time - start_time, 2)} seconds!")
             if results:

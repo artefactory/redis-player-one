@@ -32,7 +32,7 @@ class RedisDocumentStore(SearchEngineDocumentStore):
         recreate_index: bool = False,
         create_index: bool = False,
         refresh_type: str = "wait_for",
-        similarity: str = "cosine",
+        similarity: str = "dot_product",
         return_embedding: bool = False,
         duplicate_documents: str = "overwrite",
         index_type: str = "flat",
