@@ -1,7 +1,34 @@
 
 # **ASK Yves, by Redis Player One**
+<div align="center">
+    <a href="https://github.com/RedisVentures/redis-arXiv-search"><img src="data/askiv.png" width="30%"><img></a>
+    <br />
+    <br />
+<div display="inline-block">
+    <a href="https://docsearch.redisventures.com"><b>Hosted Demo</b></a>&nbsp;&nbsp;&nbsp;
+    <a href="https://github.com/RedisVentures/redis-arXiv-search"><b>Code</b></a>&nbsp;&nbsp;&nbsp;
+  </div>
+    <br />
+    <br />
+</div>
+
+# Ask' Yves
+
+Yves Saint Laurent was one of the greatest minds of french history. He spent a lot of time reading scientific papers on arXiv.
+
+Ask him anything. He will have an answer. Probably not the right one, but you might be surprised 😅
+
+## How it works
+# TODO
 
 ## Getting Started
+
+### Run
+
+`make run_app`
+
+### Set-up
+
 The steps below outline how to get this app up and running on your machine.
 
 ## **Run the app locally**
@@ -53,3 +80,7 @@ Note: The deployment instance will directly pull the main branch of this repo to
 
 ### Interested in contributing?
 This is a new project. Comment on an open issue or create a new one. We can triage it from there.
+
+
+### Next steps
+# TODO
