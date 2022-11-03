@@ -3,19 +3,17 @@ from unittest import result
 
 import numpy as np
 import streamlit as st
+import torch
+from haystack.nodes.reader.farm import FARMReader
+from haystack.nodes.retriever.sparse import BM25Retriever
+from haystack.pipelines import ExtractiveQAPipeline
 from redis.commands.search.query import Query
 
-from haystack.nodes.retriever.sparse import BM25Retriever
-from haystack.nodes.reader.farm import FARMReader
-from haystack.pipelines import ExtractiveQAPipeline
-
-from redis_player_one.haystack.redis_document_store import RedisDocumentStore
-from config.redis_config import INDEX_NAME, SEARCH_TYPE, REDIS_HOST, REDIS_PORT, REDIS_PASSWORD, ROOT_PATH
+from config.redis_config import INDEX_NAME, REDIS_HOST, REDIS_PASSWORD, REDIS_PORT, ROOT_PATH, SEARCH_TYPE
 from data.categories import CAT_TO_DEFINITION_MAP
 from redis_player_one.embedder import make_embeddings
+from redis_player_one.haystack.redis_document_store import RedisDocumentStore
 from redis_player_one.redis_client import redis_client
-
-import torch
 
 
 @st.experimental_singleton(show_spinner=False)
