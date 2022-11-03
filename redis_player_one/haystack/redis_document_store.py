@@ -32,7 +32,7 @@ class RedisDocumentStore(SearchEngineDocumentStore):
         recreate_index: bool = False,
         create_index: bool = False,
         refresh_type: str = "wait_for",
-        similarity: str = "dot_product",
+        similarity: str = "cosine",
         return_embedding: bool = False,
         duplicate_documents: str = "overwrite",
         index_type: str = "flat",
@@ -99,7 +99,6 @@ class RedisDocumentStore(SearchEngineDocumentStore):
             .paging(0, number_of_results)
             .return_fields(
                 "paper_id",
-                "vector",
                 "vector_score",
                 "year",
                 "title",
@@ -137,7 +136,7 @@ class RedisDocumentStore(SearchEngineDocumentStore):
         index=None,
         return_embedding=None,
         headers=None,
-        scale_score=None,
+        scale_score=True,
         custom_query=None,
         all_terms_must_match=None,
     ):
@@ -204,15 +203,13 @@ class RedisDocumentStore(SearchEngineDocumentStore):
             score = round(100 * float(paper.vector_score), 1)
         else:
             score = float(paper.vector_score)
-        #vector = np.frombuffer(bytes(paper.vector, encoding="raw_unicode_escape"), dtype=np.float32)
-        vector = None
         doc_dict = {
             "id": paper.paper_id,
             "content": paper.abstract,
             "content_type": "text",
             "meta": meta_data,
             "score": score,
-            "embedding": vector,
+            "embedding": None,
         }
         document = Document.from_dict(doc_dict)
         return document

@@ -16,7 +16,7 @@ QUESTION = "What are the symptoms of coronavirus ?"
 # Exctractive
 # retriever = EmbeddingRetriever(
 #     document_store=document_store,
-#     embedding_model="sentence-transformers/all-mpnet-base-v2",
+#     embedding_model="sentence-transformers/multi-qa-mpnet-base-dot-v1",
 #     model_format="sentence_transformers",
 # )
 # reader = FARMReader(model_name_or_path="deepset/roberta-base-squad2", use_gpu=False, context_window_size=2000)
