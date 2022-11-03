@@ -15,4 +15,3 @@ if missing:
     raise RuntimeError(f"The following env variables haven't been set : {missing}")
 
 SEARCH_TYPE = "KNN"
-NUMBER_OF_RESULTS = 10
