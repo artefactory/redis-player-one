@@ -1,15 +1,22 @@
 import numpy as np
 import streamlit as st
-from redis.commands.search.query import Query
-
+import torch
 from haystack.nodes import EmbeddingRetriever
 from haystack.nodes.reader.farm import FARMReader
 from haystack.pipelines import ExtractiveQAPipeline
-import torch
+from redis.commands.search.query import Query
 
-from redis_player_one.haystack.redis_document_store import RedisDocumentStore
-from config.redis_config import INDEX_NAME, SEARCH_TYPE, REDIS_HOST, REDIS_PORT, REDIS_PASSWORD, TOP_K_RETRIEVER, TOP_K_READER
+from config.redis_config import (
+    INDEX_NAME,
+    REDIS_HOST,
+    REDIS_PASSWORD,
+    REDIS_PORT,
+    SEARCH_TYPE,
+    TOP_K_READER,
+    TOP_K_RETRIEVER,
+)
 from redis_player_one.embedder import make_embeddings
+from redis_player_one.haystack.redis_document_store import RedisDocumentStore
 from redis_player_one.redis_client import redis_client
 
 
@@ -21,20 +28,17 @@ def instanciate_retriever():
             document_store=document_store,
             embedding_model="sentence-transformers/all-mpnet-base-v2",
             model_format="sentence_transformers",
-        )     
+        )
         reader = FARMReader(
-            model_name_or_path="deepset/roberta-base-squad2", use_gpu=torch.cuda.is_available(), context_window_size=2000)
+            model_name_or_path="deepset/roberta-base-squad2",
+            use_gpu=torch.cuda.is_available(),
+            context_window_size=2000,
+        )
         pipe = ExtractiveQAPipeline(reader, retriever)
     return pipe
 
 
-
-def create_query(
-    categories: list,
-    years: list,
-    search_type: str = SEARCH_TYPE,
-    number_of_results: int = 10
-) -> Query:
+def create_query(categories: list, years: list, search_type: str = SEARCH_TYPE, number_of_results: int = 10) -> Query:
     tag = "("
     if years:
         years = " | ".join(years)
@@ -47,30 +51,31 @@ def create_query(
     if len(tag) < 3:
         tag = "*"
     print(tag, flush=True)
-    base_query = f'{tag}=>[{search_type} {number_of_results} @vector $vec_param AS vector_score]'
-    return Query(base_query)\
-        .sort_by("vector_score")\
-        .paging(0, number_of_results)\
-        .return_fields("paper_id",
-                       "vector",
-                       "vector_score",
-                       "year",
-                       "title",
-                       "authors",
-                       "abstract",
-                       "categories",
-                       "update_date",
-                       "journal-ref",
-                       "submitter",
-                       "doi")\
+    base_query = f"{tag}=>[{search_type} {number_of_results} @vector $vec_param AS vector_score]"
+    return (
+        Query(base_query)
+        .sort_by("vector_score")
+        .paging(0, number_of_results)
+        .return_fields(
+            "paper_id",
+            "vector",
+            "vector_score",
+            "year",
+            "title",
+            "authors",
+            "abstract",
+            "categories",
+            "update_date",
+            "journal-ref",
+            "submitter",
+            "doi",
+        )
         .dialect(2)
+    )
 
 
-def query_redis(text: str, date_range: list, nb_articles: int):    # TODO: Delete if not used
-    q = create_query(categories=None,
-                     years=date_range,
-                     search_type=SEARCH_TYPE,
-                     number_of_results=nb_articles)
+def query_redis(text: str, date_range: list, nb_articles: int):  # TODO: Delete if not used
+    q = create_query(categories=None, years=date_range, search_type=SEARCH_TYPE, number_of_results=nb_articles)
 
     # Vectorize the query
     query_vector = make_embeddings(text).astype(np.float32).tobytes()
@@ -86,6 +91,8 @@ def make_qa_query(pipe, text: str, date_range: list):
         query=text,
         params={
             "Retriever": {"top_k": TOP_K_RETRIEVER, "filters": {"date_range": date_range}},
-            "Reader": {"top_k": TOP_K_READER}},
-        debug=True)
+            "Reader": {"top_k": TOP_K_READER},
+        },
+        debug=True,
+    )
     return results
