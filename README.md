@@ -1,43 +1,38 @@
 
-<div align="center">
-    <a href="https://github.com/RedisVentures/redis-arXiv-search"><img src="https://github.com/RedisVentures/redis-arXiv-search/blob/main/backend/vecsim_app/data/redis-logo.png?raw=true" width="30%"><img></a>
-    <br />
-    <br />
-<div display="inline-block">
-    <a href="https://docsearch.redisventures.com"><b>Hosted Demo</b></a>&nbsp;&nbsp;&nbsp;
-    <a href="https://github.com/RedisVentures/redis-arXiv-search"><b>Code</b></a>&nbsp;&nbsp;&nbsp;
-    <a href="https://datasciencedojo.com/blog/ai-powered-document-search/"><b>Blog Post</b></a>&nbsp;&nbsp;&nbsp;
-    <a href="https://redis.io/docs/stack/search/reference/vectors/"><b>Redis VSS Documentation</b></a>&nbsp;&nbsp;&nbsp;
-  </div>
-    <br />
-    <br />
-</div>
-
-# Redis arXiv Search
-*This repository is the official codebase for the arxiv paper search app hosted at: **https://docsearch.redisventures.com***
-
-Through the RediSearch module, vector data types and search indexes can be added to Redis. This turns Redis into
-a highly performant, in-memory, vector database, which can be used for many types of applications.
-
-___
-
-Here we showcase Redis vector similarity search (VSS) applied to a document search/retrieval use case. Read more about AI-powered search in [our blog post](https://datasciencedojo.com/blog/ai-powered-document-search/) (shout out to our friends at Data Science Dojo).
-
-
-![Screen Shot 2022-09-20 at 12 20 16 PM](https://user-images.githubusercontent.com/13009163/191346916-4b8f648f-7552-4910-ad4e-9cc117230f00.png)
-
-
 ## Getting Started
 The steps below outline how to get this app up and running on your machine.
 
-## Docker
-Install [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+### **Run the app locally**
 
-## Download arXiv Dataset
+**1. Setup python environment:**
 
-Pull the arXiv dataset from the the following [Kaggle link](https://www.kaggle.com/Cornell-University/arxiv).
+Run the following command to create a virtual environment and install all requirements:
+```bash
+make create_env
+```
 
-Download and extract the zip file and place the resulting json file (`arxiv-metadata-oai-snapshot.json`) in the `data/` directory.
+**2. Fill credentials in environment:**
+
+You'll need to export the following variables in your environment. Check `credentials/env.sh.exemple` to have the list of variables to fill:
+```bash
+export REDIS_HOST="redis_host_url"
+export REDIS_PORT="1234"
+export REDIS_DB="your-redis-database-name"
+export REDIS_PASSWORD="redis-db-password"
+```
+
+**3. Run the app locally:**
+To run the app in your local environment, just run the following command:
+```bash
+make run_app
+```
+
+It will open a Streamlit window on your web-browser:
+
+# 
+TO PUT: IMAGE OF BROWSER
+#
+
 
 ## Embedding Creation
 
