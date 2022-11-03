@@ -1,18 +1,14 @@
 import logging
-from typing import List, Optional, Union, Dict
+from typing import Dict, List, Optional, Union
 
 import numpy as np
 import redis
-from redis.commands.search.query import Query
-from haystack.schema import Document
-
-
-from config.redis_config import INDEX_NAME, SEARCH_TYPE, NUMBER_OF_RESULTS
 from haystack.document_stores.search_engine import SearchEngineDocumentStore
+from haystack.schema import Document
+from redis.commands.search.query import Query
 
-from config.redis_config import REDIS_HOST, REDIS_PASSWORD, REDIS_PORT
+from config.redis_config import INDEX_NAME, NUMBER_OF_RESULTS, SEARCH_TYPE
 from redis_player_one.embedder import make_embeddings
-
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +19,7 @@ class RedisDocumentStore(SearchEngineDocumentStore):
         host: Union[str, List[str]] = "localhost",
         port: Union[int, List[int]] = 9200,
         password: str = "",
-        index: str = "document",
+        index: str = INDEX_NAME,
         label_index: str = "label",
         search_fields: Union[str, list] = "content",
         content_field: str = "content",
@@ -82,16 +78,6 @@ class RedisDocumentStore(SearchEngineDocumentStore):
         port: str,
         password: str,
     ) -> redis.client.Redis:
-        """Creates redis client when initializing the class.
-
-        Args:
-            host (str): Host where redis is deployed. e.g: localhost.
-            port (str): Port on which to query redis. e.g: 9200.
-            password (str): Password to redis database.
-
-        Returns:
-            redis.client.Redis: redis client.
-        """
         redis_client = redis.Redis(host=host, port=port, password=password)
         return redis_client
 
@@ -101,19 +87,9 @@ class RedisDocumentStore(SearchEngineDocumentStore):
         search_type: str = SEARCH_TYPE,
         number_of_results: int = NUMBER_OF_RESULTS,
     ) -> Query:
-        """Method building body request to send to redis.
-
-        Args:
-            years (list): List of years of publication on which to filter the query. They need to be consecutive.
-            search_type (str, optional): Method to perform search operation in redis. Defaults to SEARCH_TYPE (e.g: KNN).
-            number_of_results (int, optional): Number of papers to retrieve from redis. Defaults to NUMBER_OF_RESULTS.
-
-        Returns:
-            Query: query object to send to redis client.
-        """
         if years:
             years = " | ".join(years)
-            tag = f"(@year:{years})"
+            tag = f"(@year:{{{years}}})"
         else:
             tag = "*"
         base_query = f"{tag}=>[{search_type} {number_of_results} @vector $vec_param AS vector_score]"
@@ -161,14 +137,23 @@ class RedisDocumentStore(SearchEngineDocumentStore):
         return_embedding=None,
         headers=None,
         scale_score=None,
+        custom_query=None,
+        all_terms_must_match=None,
     ):
-        date_range = list(map(str, list((range(2016, 2023)))))
-        if isinstance(filters, dict):
-            date_range = filters.get("date_range", date_range)
-        q = self._get_vector_similarity_query(
-            years=date_range, search_type=SEARCH_TYPE, number_of_results=top_k
-        )
+        if return_embedding:
+            raise NotImplementedError("`return_embedding` is not implemented yet")
+        if headers:
+            raise NotImplementedError("`headers` is not implemented yet")
+        if custom_query:
+            raise NotImplementedError("`custom_query` is not implemented yet")
+        if all_terms_must_match:
+            raise NotImplementedError("`all_terms_must_match` is not implemented yet")
 
+        if index is None:
+            index = self.index
+        if isinstance(filters, dict):
+            date_range = filters.get("date_range", [])
+        q = self._get_vector_similarity_query(years=date_range, search_type=SEARCH_TYPE, number_of_results=top_k)
         # Vectorize the query
         if isinstance(query_emb, str):
             query_emb = make_embeddings(query_emb).astype(np.float32).tobytes()
@@ -177,8 +162,8 @@ class RedisDocumentStore(SearchEngineDocumentStore):
         params_dict = {"vec_param": query_emb}
 
         # Execute the query
-        results = self.client.ft(INDEX_NAME).search(q, query_params=params_dict)
-        documents = [self.convert_hit_to_document(hit) for hit in results.docs]
+        results = self.client.ft(index).search(q, query_params=params_dict)
+        documents = [self.convert_hit_to_document(hit, scale_score) for hit in results.docs]
         return documents
 
     def query(
@@ -205,18 +190,24 @@ class RedisDocumentStore(SearchEngineDocumentStore):
             return_embedding=return_embedding,
             headers=headers,
             scale_score=scale_score,
+            custom_query=custom_query,
+            all_terms_must_match=all_terms_must_match,
         )
         return documents
 
     @staticmethod
-    def convert_hit_to_document(paper):
+    def convert_hit_to_document(paper, scale_score=False):
         meta_data = {"categories": paper.categories, "title": paper.title, "update_date": paper.update_date}
+        if scale_score:
+            score = round(100 * (1 - float(paper.vector_score)), 1)
+        else:
+            score = paper.vector_score
         doc_dict = {
             "id": paper.paper_id,
             "content": paper.abstract,
             "content_type": "text",
             "meta": meta_data,
-            "score": paper.vector_score,
+            "score": score,
             "embedding": None,
         }
         document = Document.from_dict(doc_dict)

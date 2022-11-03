@@ -5,7 +5,7 @@ import numpy as np
 import streamlit as st
 from redis.commands.search.query import Query
 
-from haystack.nodes import EmbeddingRetriever
+from haystack.nodes.retriever.sparse import BM25Retriever
 from haystack.nodes.reader.farm import FARMReader
 from haystack.pipelines import ExtractiveQAPipeline
 
@@ -20,11 +20,7 @@ from redis_player_one.redis_client import redis_client
 def instanciate_retriever():
     with st.spinner("Loading models..."):
         document_store = RedisDocumentStore(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD)
-        retriever = EmbeddingRetriever(
-            document_store=document_store,
-            embedding_model="sentence-transformers/all-mpnet-base-v2",
-            model_format="sentence_transformers",
-        )
+        retriever = BM25Retriever(document_store=document_store)
         reader = FARMReader(model_name_or_path="deepset/roberta-base-squad2", use_gpu=False, context_window_size=2000)
         pipe = ExtractiveQAPipeline(reader, retriever)
     return pipe
@@ -98,8 +94,8 @@ def submit_text(pipe, text: str, date_range: list, nb_articles: int):
     results = pipe.run(
         query=text,
         params={
-            "Retriever": {"top_k": 10, "filters": {"date_range": date_range, "nb_articles": nb_articles}},
-            "Reader": {"top_k": 10}},
+            "Retriever": {"top_k": nb_articles, "filters": {"date_range": date_range}},
+            "Reader": {"top_k": nb_articles}},
         debug=True)
     return results
 
@@ -134,7 +130,7 @@ def app():
 
     if st.session_state["button1"]:
         if not user_question:
-            st.sidebar.error('Please type a question in the searchbar')
+            st.error('please type a question in the searchbar')
         else:
             st.markdown(f'<h2 style="color:#FFFFFF;font-size:30px;">You\'ve entered: <br><em>\"{user_question}\"</em></h1>',
                         unsafe_allow_html=True)
@@ -151,7 +147,7 @@ def app():
                 end_time = time.time()
             st.sidebar.success(f"Found {len(results['answers'])} abstracts in {round(end_time - start_time, 2)} seconds!")
             if results:
-                answers = sorted(results["answers"], key=lambda x: x.score, reverse=True)
+                answers = sorted(results["answers"], key=lambda x: x.score, reverse=False)
                 for i, paper in enumerate(answers):
                     col1, col2 = st.columns([3, 1])
                     with col1:
@@ -166,7 +162,7 @@ def app():
                                     unsafe_allow_html=True)
 
                     with col2:
-                        similarity_score_str = f"{round(100 *float(paper.score), 1)}%"
+                        similarity_score_str = f"{round(100 *(1 - float(paper.score)), 1)}%"
                         st.markdown('<h2 style="color:#F71735;font-size:24px;"><u>Similarity score:</u></h2>',
                                     unsafe_allow_html=True)
                         st.markdown(f'<h2 style="color:#FFFFFF;font-size:24px;">📊 {similarity_score_str}</h2>',
