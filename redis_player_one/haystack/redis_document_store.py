@@ -87,22 +87,14 @@ class RedisDocumentStore(SearchEngineDocumentStore):
 
     @staticmethod
     def _get_vector_similarity_query(
-        categories: list,
         years: list,
         search_type: str = SEARCH_TYPE,
         number_of_results: int = NUMBER_OF_RESULTS,
     ) -> Query:
-
-        tag = "("
         if years:
             years = " | ".join(years)
-            tag += f"@year:{{{years}}}"
-        if categories:
-            categories = " | ".join(categories)
-            tag += f"@categories:{{{categories}}}"
-        tag += ")"
-        # if no tags are selected
-        if len(tag) < 3:
+            tag = f"(@year:{{{years}}})"
+        else:
             tag = "*"
         base_query = f"{tag}=>[{search_type} {number_of_results} @vector $vec_param AS vector_score]"
         return (
@@ -154,7 +146,7 @@ class RedisDocumentStore(SearchEngineDocumentStore):
         if isinstance(filters, dict):
             date_range = filters.get("date_range", date_range)
         q = self._get_vector_similarity_query(
-            categories=None, years=date_range, search_type=SEARCH_TYPE, number_of_results=top_k
+            years=date_range, search_type=SEARCH_TYPE, number_of_results=top_k
         )
 
         # Vectorize the query
