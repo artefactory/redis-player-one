@@ -37,7 +37,8 @@ The steps below outline how to get this app up and running on your machine.
 
 Run the following command to create a virtual environment and install all requirements:
 ```bash
-make create_env
+make env
+make install_requirements
 ```
 
 **2. Fill credentials in environment:**
