@@ -7,7 +7,7 @@ from redis.commands.search.query import Query
 from haystack.schema import Document
 
 
-from config.redis_config import INDEX_NAME, SEARCH_TYPE
+from config.redis_config import INDEX_NAME, SEARCH_TYPE, NUMBER_OF_RESULTS
 from haystack.document_stores.search_engine import SearchEngineDocumentStore
 
 from config.redis_config import REDIS_HOST, REDIS_PASSWORD, REDIS_PORT
@@ -78,31 +78,43 @@ class RedisDocumentStore(SearchEngineDocumentStore):
     @classmethod
     def _init_redis_client(
         cls,
-        host: str = REDIS_HOST,
-        port: str = REDIS_PORT,
-        password: str = REDIS_PASSWORD,
+        host: str,
+        port: str,
+        password: str,
     ) -> redis.client.Redis:
+        """Creates redis client when initializing the class.
+
+        Args:
+            host (str): Host where redis is deployed. e.g: localhost.
+            port (str): Port on which to query redis. e.g: 9200.
+            password (str): Password to redis database.
+
+        Returns:
+            redis.client.Redis: redis client.
+        """
         redis_client = redis.Redis(host=host, port=port, password=password)
         return redis_client
 
     @staticmethod
     def _get_vector_similarity_query(
-        categories: list,
         years: list,
         search_type: str = SEARCH_TYPE,
-        number_of_results: int = 10,
+        number_of_results: int = NUMBER_OF_RESULTS,
     ) -> Query:
+        """Method building body request to send to redis.
 
-        tag = "("
+        Args:
+            years (list): List of years of publication on which to filter the query. They need to be consecutive.
+            search_type (str, optional): Method to perform search operation in redis. Defaults to SEARCH_TYPE (e.g: KNN).
+            number_of_results (int, optional): Number of papers to retrieve from redis. Defaults to NUMBER_OF_RESULTS.
+
+        Returns:
+            Query: query object to send to redis client.
+        """
         if years:
             years = " | ".join(years)
-            tag += f"@year:{{{years}}}"
-        if categories:
-            categories = " | ".join(categories)
-            tag += f"@categories:{{{categories}}}"
-        tag += ")"
-        # if no tags are selected
-        if len(tag) < 3:
+            tag = f"(@year:{years})"
+        else:
             tag = "*"
         base_query = f"{tag}=>[{search_type} {number_of_results} @vector $vec_param AS vector_score]"
         return (
@@ -138,7 +150,7 @@ class RedisDocumentStore(SearchEngineDocumentStore):
         pass
 
     def _get_raw_similarity_score(self, score):
-        return score - 1000
+        return score
 
     def query_by_embedding(
         self,
@@ -154,7 +166,7 @@ class RedisDocumentStore(SearchEngineDocumentStore):
         if isinstance(filters, dict):
             date_range = filters.get("date_range", date_range)
         q = self._get_vector_similarity_query(
-            categories=None, years=date_range, search_type=SEARCH_TYPE, number_of_results=top_k
+            years=date_range, search_type=SEARCH_TYPE, number_of_results=top_k
         )
 
         # Vectorize the query
