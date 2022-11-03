@@ -1,8 +1,10 @@
 
+# **ASK Yves, by Redis Player One**
+
 ## Getting Started
 The steps below outline how to get this app up and running on your machine.
 
-### **Run the app locally**
+## **Run the app locally**
 
 **1. Setup python environment:**
 
@@ -34,56 +36,19 @@ TO PUT: IMAGE OF BROWSER
 #
 
 
-## Embedding Creation
+## **Run the app on a Saturn Cloud Deployment instance**
 
-**1. Setup python environment:**
-- If you use conda, take advantage of the Makefile included here: `make env`
-- Otherwise, setup your virtual env however you wish and install python deps in `requirements.txt`
+You can easily create a deployment instance to run your app in Saturn Cloud by copying the recipe stored in the file `saturn-deployment-recipe.json` at the root of the project. Here is the instruction to create your own instance:
 
-**2. Use the notebook:**
-- Run through the [`arxiv-embeddings.ipynb`](data/arxiv-embeddings.ipynb) notebook to generate some sample embeddings.
+1. First, you'll need to parametrize your credentials in Saturn Cloud so your instance can access them. Go to "Secrets" > "New", and create a secret for the 4 credentials variables you exported earlier.
 
+2. Then, go to "Resources" > "New Deployment" > "Use a Recipe", and paste the content of `saturn-deployment-recipe.json` in the open window. A deployment instance will be created with app parameters.
 
-## Application
+3. Finally, you'll need to add the credentials that are necessary to run your app. After creating the instance, select it in "Resources", then go to "Secrets" > "Attach Secret Environment Variable", and select in the dropdown menu the secrets you defined in step 1. Be sure to assign corresponding environment variable name to them.
 
-This app was built as a Single Page Application (SPA) with the following components:
+4. Now you're ready to go! Click on "Overview" > "Start", and once the app is running, you can access it by clicking on the provided public URL.
 
-- **[Redis Stack](https://redis.io/docs/stack/)**: Vector database + JSON storage
-- **[FastAPI](https://fastapi.tiangolo.com/)** (Python 3.8)
-- **[Pydantic](https://pydantic-docs.helpmanual.io/)** for schema and validation
-- **[React](https://reactjs.org/)** (with Typescript)
-- **[Redis OM](https://redis.io/docs/stack/get-started/tutorials/stack-python/)** for ORM
-- **[Docker Compose](https://docs.docker.com/compose/)** for development
-- **[MaterialUI](https://material-ui.com/)** for some UI elements/components
-- **[React-Bootstrap](https://react-bootstrap.github.io/)** for some UI elements
-- **[Huggingface Tokenizers + Models](https://huggingface.co/sentence-transformers)** for vector embedding creation
-
-Some inspiration was taken from this [Cookiecutter project](https://github.com/Buuntu/fastapi-react)
-and turned into a SPA application instead of a separate front-end server approach.
-
-### Launch
-
-**To launch app, run the following:**
-- `docker compose up` from the same directory as `docker-compose.yml`
-- Navigate to `http://localhost:8888` in a browser
-
-**Building the containers manually:**
-
-The first time you run `docker compose up` it will automatically build your Docker images based on the `Dockerfile`. However, in future passes when you need to rebuild, simply run: `docker compose up --build` to force a new build.
-
-### Using a React dev env
-It's typically easier to manipulate front end code in an interactive environment (**outside of Docker**) where one can test out code changes in real time. In order to use this approach:
-
-1. Follow steps from previous section with Docker Compose to deploy the backend API.
-2. `cd gui/` directory and use `yarn` to install packages: `yarn install --no-optional` (you may need to use `npm` to install `yarn`).
-3. Use `yarn` to serve the application from your machine: `yarn start`.
-4. Navigate to `http://localhost:3000` in a browser.
-5. Make front end changes in realtime.
-
-### Troubleshooting
-
-- Issues with Docker? Run `docker system prune`, restart Docker Desktop, and try again.
-- Open an issue here on GitHub and we will be as responsive as we can!
+Note: The deployment instance will directly pull the main branch of this repo to run the app with, but you can modify the branch it pulls by modifying it in "Git Repos" section. 
 
 
 ### Interested in contributing?
