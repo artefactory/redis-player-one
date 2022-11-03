@@ -99,6 +99,7 @@ class RedisDocumentStore(SearchEngineDocumentStore):
             .paging(0, number_of_results)
             .return_fields(
                 "paper_id",
+                "vector",
                 "vector_score",
                 "year",
                 "title",
@@ -151,8 +152,9 @@ class RedisDocumentStore(SearchEngineDocumentStore):
 
         if index is None:
             index = self.index
+        date_range = []
         if isinstance(filters, dict):
-            date_range = filters.get("date_range", [])
+            date_range = filters.get("date_range", date_range)
         q = self._get_vector_similarity_query(years=date_range, search_type=SEARCH_TYPE, number_of_results=top_k)
         # Vectorize the query
         if isinstance(query_emb, str):
@@ -197,18 +199,20 @@ class RedisDocumentStore(SearchEngineDocumentStore):
 
     @staticmethod
     def convert_hit_to_document(paper, scale_score=False):
-        meta_data = {"categories": paper.categories, "title": paper.title, "update_date": paper.update_date}
+        meta_data = {"categories": paper.categories, "name": paper.title, "update_date": paper.update_date}
         if scale_score:
-            score = round(100 * (1 - float(paper.vector_score)), 1)
+            score = round(100 * float(paper.vector_score), 1)
         else:
-            score = paper.vector_score
+            score = float(paper.vector_score)
+        #vector = np.frombuffer(bytes(paper.vector, encoding="raw_unicode_escape"), dtype=np.float32)
+        vector = None
         doc_dict = {
             "id": paper.paper_id,
             "content": paper.abstract,
             "content_type": "text",
             "meta": meta_data,
             "score": score,
-            "embedding": None,
+            "embedding": vector,
         }
         document = Document.from_dict(doc_dict)
         return document

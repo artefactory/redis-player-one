@@ -50,6 +50,7 @@ def create_query(
         .sort_by("vector_score")\
         .paging(0, number_of_results)\
         .return_fields("paper_id",
+                       "vector",
                        "vector_score",
                        "year",
                        "title",
@@ -151,7 +152,7 @@ def app():
                 for i, paper in enumerate(answers):
                     col1, col2 = st.columns([3, 1])
                     with col1:
-                        st.markdown(f'<h2 style="color:#2892D7;font-size:24px;">Abstract #{i + 1} - {paper.meta["title"]}</h1>',
+                        st.markdown(f'<h2 style="color:#2892D7;font-size:24px;">Abstract #{i + 1} - {paper.meta["name"]}</h1>',
                                     unsafe_allow_html=True)
                         abstact_str = paper.context
                         start, end = paper.offsets_in_document[0].start, paper.offsets_in_document[0].end
