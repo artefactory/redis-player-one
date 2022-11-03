@@ -1,4 +1,6 @@
 import time
+import torch
+from unittest import result
 
 import streamlit as st
 from lib.app_utils import button_callback, instanciate_button
@@ -6,6 +8,103 @@ from lib.query_utils import make_qa_query, instanciate_retriever
 
 from config.redis_config import ROOT_PATH
 from data.categories import CAT_TO_DEFINITION_MAP
+from haystack.nodes import EmbeddingRetriever
+from haystack.nodes.reader.farm import FARMReader
+from haystack.pipelines import ExtractiveQAPipeline
+
+from redis_player_one.haystack.redis_document_store import RedisDocumentStore
+from config.redis_config import INDEX_NAME, SEARCH_TYPE, REDIS_HOST, REDIS_PORT, REDIS_PASSWORD, ROOT_PATH, TOP_K_READER, TOP_K_RETRIEVER
+from data.categories import CAT_TO_DEFINITION_MAP
+from redis_player_one.embedder import make_embeddings
+from redis_player_one.redis_client import redis_client
+
+
+def create_query(
+    categories: list,
+    years: list,
+    search_type: str = SEARCH_TYPE,
+    number_of_results: int = 10
+) -> Query:
+
+    tag = "("
+    if years:
+        years = " | ".join(years)
+        tag += f"@year:{{{years}}}"
+    if categories:
+        categories = " | ".join(categories)
+        tag += f"@categories:{{{categories}}}"
+    tag += ")"
+    # if no tags are selected
+    if len(tag) < 3:
+        tag = "*"
+    print(tag, flush=True)
+    base_query = f'{tag}=>[{search_type} {number_of_results} @vector $vec_param AS vector_score]'
+    return Query(base_query)\
+        .sort_by("vector_score")\
+        .paging(0, number_of_results)\
+        .return_fields("paper_id",
+                       "vector",
+                       "vector_score",
+                       "year",
+                       "title",
+                       "authors",
+                       "abstract",
+                       "categories",
+                       "update_date",
+                       "journal-ref",
+                       "submitter",
+                       "doi")\
+        .dialect(2)
+
+
+def submit_text(text: str, date_range: list, nb_articles: int):
+    q = create_query(categories=None,
+                     years=date_range,
+                     search_type=SEARCH_TYPE,
+                     number_of_results=nb_articles)
+
+    # Vectorize the query
+    query_vector = make_embeddings(text).astype(np.float32).tobytes()
+    params_dict = {"vec_param": query_vector}
+
+    # Execute the query
+    results = redis_client.ft(INDEX_NAME).search(q, query_params=params_dict)
+    return results
+
+
+def plot_results(results):
+    values_to_plot = []
+    for i, paper in enumerate(results.docs):
+        values_to_plot.append(
+            {
+                "year": paper.year,
+                "similarity_score": 1 - float(paper.vector_score),
+            }
+        )
+    st.line_chart(values_to_plot, x="year", y="similarity_score")
+
+
+def submit_text(pipe, text: str, date_range: list):
+    results = pipe.run(
+        query=text,
+        params={
+            "Retriever": {"top_k": TOP_K_RETRIEVER, "filters": {"date_range": date_range}},
+            "Reader": {"top_k": TOP_K_READER}},
+        debug=True)
+    return results
+
+
+def button_callback(name: str) -> None:
+    """Callback to change the session_state of the button to True
+    Args:
+        name (str): button name
+    """
+    st.session_state[name] = True
+
+
+def instanciate_button(button_name: str) -> None:
+    if button_name not in st.session_state:
+        st.session_state[button_name] = False
 
 
 def app():
@@ -35,9 +134,7 @@ def app():
                 results = make_qa_query(
                     pipe=pipe,
                     text=user_question,
-                    date_range=list(map(str, list((range(date_range[0], date_range[1] + 1))))),
-                    nb_articles=nb_articles
-                )
+                    date_range=list(map(str, list((range(date_range[0], date_range[1] + 1)))))                )
                 end_time = time.time()
             
             st.sidebar.success(

@@ -21,3 +21,6 @@ if missing:
 SEARCH_TYPE = "KNN"
 NUMBER_OF_RESULTS = 10
 ROOT_PATH = get_project_root()
+
+TOP_K_RETRIEVER = 10 # TODO: intuition Karim/Amale > plus c'est grand mieux c'est mais ça ajoute beaucoup de temps d'exec donc check sur GPU si ok
+TOP_K_READER = 10
