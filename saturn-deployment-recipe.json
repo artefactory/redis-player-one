@@ -18,7 +18,7 @@
       "install": "streamlit pandas numpy redis sentence-transformers farm-haystack"
     }
   },
-  "start_script": "cd redis-player-one/",
+  "start_script": "npm install mathjax\ncd redis-player-one/",
   "git_repositories": [
     {
       "url": "git@github.com:artefactory/redis-player-one.git",
