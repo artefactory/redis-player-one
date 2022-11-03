@@ -104,9 +104,7 @@ class RedisDocumentStore(SearchEngineDocumentStore):
         # if no tags are selected
         if len(tag) < 3:
             tag = "*"
-        print(tag, flush=True)
         base_query = f"{tag}=>[{search_type} {number_of_results} @vector $vec_param AS vector_score]"
-        # TODO: parametrize vector_score
         return (
             Query(base_query)
             .sort_by("vector_score")
@@ -127,22 +125,6 @@ class RedisDocumentStore(SearchEngineDocumentStore):
             .dialect(2)
         )
 
-    def retrieve_paper(self, key):
-        r_client = self.client
-        abstract = r_client.hget(key, "abstract")
-        title = r_client.hget(key, "title")
-        authors = r_client.hget(key, "authors")
-        year = r_client.hget(key, "year")
-        paper_id = r_client.hget(key, "paper_id")
-
-        return {
-            "abstract": abstract,
-            "title": title,
-            "authors": authors,
-            "year": year,
-            "paper_id": paper_id,
-        }
-
     def _create_document_index(self):
         pass
 
@@ -158,18 +140,34 @@ class RedisDocumentStore(SearchEngineDocumentStore):
     def _get_raw_similarity_score(self, score):
         return score - 1000
 
-    def query_by_embedding(self, query: str, date_range: list, nb_articles: int):
+    def query_by_embedding(
+        self,
+        query_emb: str,
+        filters: list,
+        top_k: int,
+        index=None,
+        return_embedding=None,
+        headers=None,
+        scale_score=None,
+    ):
+        date_range = list(map(str, list((range(2016, 2023)))))
+        if isinstance(filters, dict):
+            date_range = filters.get("date_range", date_range)
         q = self._get_vector_similarity_query(
-            categories=None, years=date_range, search_type=SEARCH_TYPE, number_of_results=nb_articles
+            categories=None, years=date_range, search_type=SEARCH_TYPE, number_of_results=top_k
         )
 
         # Vectorize the query
-        query_vector = make_embeddings(query).astype(np.float32).tobytes()
-        params_dict = {"vec_param": query_vector}
+        if isinstance(query_emb, str):
+            query_emb = make_embeddings(query_emb).astype(np.float32).tobytes()
+        elif isinstance(query_emb, np.ndarray):
+            query_emb = query_emb.astype(np.float32).tobytes()
+        params_dict = {"vec_param": query_emb}
 
         # Execute the query
         results = self.client.ft(INDEX_NAME).search(q, query_params=params_dict)
-        return results
+        documents = [self.convert_hit_to_document(hit) for hit in results.docs]
+        return documents
 
     def query(
         self,
@@ -178,20 +176,24 @@ class RedisDocumentStore(SearchEngineDocumentStore):
         top_k: int = 10,
         custom_query: Optional[str] = None,
         index: Optional[str] = None,
+        return_embedding: Optional[bool] = None,
         headers: Optional[Dict[str, str]] = None,
         all_terms_must_match: bool = False,
         scale_score: bool = True,
     ) -> List[Document]:
         if index is None:
             index = self.index
-        date_range = list(map(str, list((range(2016, 2023)))))
-        nb_articles = 10
-        if isinstance(filters, dict):
-            date_range = filters.get("date_range", date_range)
-            nb_articles = filters.get("nb_articles", nb_articles)
-        results = self.query_by_embedding(query, date_range, nb_articles)
-
-        documents = [self.convert_hit_to_document(hit) for hit in results.docs]
+        if return_embedding is None:
+            return_embedding = self.return_embedding
+        documents = self.query_by_embedding(
+            query_emb=query,
+            filters=filters,
+            top_k=top_k,
+            index=index,
+            return_embedding=return_embedding,
+            headers=headers,
+            scale_score=scale_score,
+        )
         return documents
 
     @staticmethod
