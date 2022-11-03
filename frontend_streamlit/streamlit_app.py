@@ -16,7 +16,7 @@ def app():
     with st.form(key="content_section"):
         with st.sidebar:
             user_question, date_range = _display_user_inputs()
-            st.form_submit_button("Submit", on_click=button_callback, kwargs={"name": "button1"})
+            st.form_submit_button("Submit to Yves", on_click=button_callback, kwargs={"name": "button1"})
 
     if st.session_state["button1"]:
         if not user_question:
@@ -38,7 +38,7 @@ def app():
                 end_time = time.time()
 
             st.sidebar.success(
-                f"Found {len(results['answers'])} abstracts in {round(end_time - start_time, 2)} seconds!"
+                f"Top {len(results['answers'])} answers found in {round(end_time - start_time, 2)} seconds!"
             )
 
             if results:
@@ -52,13 +52,13 @@ def app():
                         )
                         abstact_str = paper.context
                         start, end = paper.offsets_in_document[0].start, paper.offsets_in_document[0].end
-                        abstact_str = f'{abstact_str[:start]}<b style="background-color:#FFFF00;color:#4C4C4C;">{abstact_str[start:end]}</b>{abstact_str[end:]}'
+                        abstact_str = f'{abstact_str[:start]}<b style="background-color:#FFBA08;color:#4C4C4C;">{abstact_str[start:end]}</b>{abstact_str[end:]}'
                         st.markdown(f'<p style="color:#FFF;font-size:19px;">{abstact_str}</p>', unsafe_allow_html=True)
 
                     with col2:
                         similarity_score_str = f"{round(100 *float(paper.score), 1)}%"
                         st.markdown(
-                            '<h2 style="color:#F71734;font-size:19px;">Similarity score:</h2>', unsafe_allow_html=True
+                            '<h2 style="color:#F71734;font-size:19px;">Relevance score:</h2>', unsafe_allow_html=True
                         )
                         st.markdown(
                             f'<h2 style="color:#FFFFFF;font-size:19px;">📊 {similarity_score_str}</h2>',
@@ -100,7 +100,7 @@ def _display_categories(paper):
 
 def _display_user_inputs():
     user_question = st.text_input(label="Enter your question here 👇", max_chars=2000, key="user_question_input")
-    date_range = st.slider("Select a range of dates", 2015, 2022, (2015, 2022))
+    date_range = st.slider("Select a range of dates", 2008, 2022, (2015, 2022))
     return user_question, date_range
 
 
