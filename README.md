@@ -1,37 +1,39 @@
 
 <div align="center">
-    <a href="https://github.com/RedisVentures/redis-arXiv-search"><img src="https://github.com/RedisVentures/redis-arXiv-search/blob/main/backend/vecsim_app/data/redis-logo.png?raw=true" width="30%"><img></a>
+    <a href="https://github.com/RedisVentures/redis-arXiv-search"><img src="data/askiv.png" width="30%"><img></a>
     <br />
     <br />
 <div display="inline-block">
     <a href="https://docsearch.redisventures.com"><b>Hosted Demo</b></a>&nbsp;&nbsp;&nbsp;
     <a href="https://github.com/RedisVentures/redis-arXiv-search"><b>Code</b></a>&nbsp;&nbsp;&nbsp;
-    <a href="https://datasciencedojo.com/blog/ai-powered-document-search/"><b>Blog Post</b></a>&nbsp;&nbsp;&nbsp;
-    <a href="https://redis.io/docs/stack/search/reference/vectors/"><b>Redis VSS Documentation</b></a>&nbsp;&nbsp;&nbsp;
   </div>
     <br />
     <br />
 </div>
 
-# Redis arXiv Search
-*This repository is the official codebase for the arxiv paper search app hosted at: **https://docsearch.redisventures.com***
+# Ask' Yves
 
-Through the RediSearch module, vector data types and search indexes can be added to Redis. This turns Redis into
-a highly performant, in-memory, vector database, which can be used for many types of applications.
+Yves Saint Laurent was one of the greatest minds of french history. He spent a lot of time reading scientific papers on arXiv.
 
-___
+Ask him anything. He will have an answer. Probably not the right one, but you might be surprised 😅
 
-Here we showcase Redis vector similarity search (VSS) applied to a document search/retrieval use case. Read more about AI-powered search in [our blog post](https://datasciencedojo.com/blog/ai-powered-document-search/) (shout out to our friends at Data Science Dojo).
-
-
-![Screen Shot 2022-09-20 at 12 20 16 PM](https://user-images.githubusercontent.com/13009163/191346916-4b8f648f-7552-4910-ad4e-9cc117230f00.png)
-
+## How it works
+# TODO
 
 ## Getting Started
+
+### Run
+
+`make run_app`
+
+### Set-up
+
 The steps below outline how to get this app up and running on your machine.
 
-## Docker
-Install [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+`make env`
+`make install_requirements`
+Create a `.env` file in `./credentials`
+
 
 ## Download arXiv Dataset
 
@@ -93,3 +95,7 @@ It's typically easier to manipulate front end code in an interactive environment
 
 ### Interested in contributing?
 This is a new project. Comment on an open issue or create a new one. We can triage it from there.
+
+
+### Next steps
+# TODO
