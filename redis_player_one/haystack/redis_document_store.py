@@ -7,7 +7,7 @@ from redis.commands.search.query import Query
 from haystack.schema import Document
 
 
-from config.redis_config import INDEX_NAME, SEARCH_TYPE
+from config.redis_config import INDEX_NAME, SEARCH_TYPE, NUMBER_OF_RESULTS
 from haystack.document_stores.search_engine import SearchEngineDocumentStore
 
 from config.redis_config import REDIS_HOST, REDIS_PASSWORD, REDIS_PORT
@@ -90,7 +90,7 @@ class RedisDocumentStore(SearchEngineDocumentStore):
         categories: list,
         years: list,
         search_type: str = SEARCH_TYPE,
-        number_of_results: int = 10,
+        number_of_results: int = NUMBER_OF_RESULTS,
     ) -> Query:
 
         tag = "("
