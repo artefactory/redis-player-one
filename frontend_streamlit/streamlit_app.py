@@ -10,7 +10,7 @@ from haystack.nodes.reader.farm import FARMReader
 from haystack.pipelines import ExtractiveQAPipeline
 
 from redis_player_one.haystack.redis_document_store import RedisDocumentStore
-from config.redis_config import INDEX_NAME, SEARCH_TYPE, REDIS_HOST, REDIS_PORT, REDIS_PASSWORD
+from config.redis_config import INDEX_NAME, SEARCH_TYPE, REDIS_HOST, REDIS_PORT, REDIS_PASSWORD, ROOT_PATH
 from data.categories import CAT_TO_DEFINITION_MAP
 from redis_player_one.embedder import make_embeddings
 from redis_player_one.redis_client import redis_client
@@ -123,7 +123,7 @@ def app():
                    layout='wide')    
     pipe = instanciate_retriever()
     instanciate_button("button1")
-    st.sidebar.title('Redis Player One - Similarity Search Engine')
+    st.sidebar.image(str(ROOT_PATH / "data/askiv.png"))
     with st.form(key="content_section"):
         with st.sidebar:
             user_question = st.text_input(label="Enter your question here 👇", max_chars=2000, key="user_question_input")

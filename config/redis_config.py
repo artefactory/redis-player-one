@@ -1,4 +1,8 @@
 import os
+from pathlib import Path
+
+def get_project_root() -> Path:
+    return Path(__file__).parent.parent
 
 # Redis
 REDIS_HOST = os.getenv("REDIS_HOST", "NONE__REDIS_HOST")
@@ -16,3 +20,4 @@ if missing:
 
 SEARCH_TYPE = "KNN"
 NUMBER_OF_RESULTS = 10
+ROOT_PATH = get_project_root()
