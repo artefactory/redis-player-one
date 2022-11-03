@@ -16,12 +16,14 @@ def read_paper_df() -> t.List:
         df = pickle.load(f)
     return df
 
+
 async def gather_with_concurrency(n, redis_conn, *papers):
     semaphore = asyncio.Semaphore(n)
+
     async def load_paper(paper):
         async with semaphore:
-            vector = paper.pop('vector')
-            paper['paper_id'] = paper.pop('id')
+            vector = paper.pop("vector")
+            paper["paper_id"] = paper.pop("id")
             p = Paper(**paper)
             key = "paper_vector:" + str(p.paper_id)
             # async write data to redis
@@ -34,9 +36,12 @@ async def gather_with_concurrency(n, redis_conn, *papers):
                     "categories": p.categories,
                     "year": p.year,
                     "vector": np.array(vector, dtype=np.float32).tobytes(),
-            })
+                },
+            )
+
     # gather with concurrency
     await asyncio.gather(*[load_paper(p) for p in papers])
+
 
 async def load_all_data():
     # TODO use redis-om connection
@@ -46,7 +51,7 @@ async def load_all_data():
     else:
         print("Loading papers into Vecsim App")
         papers = read_paper_df()
-        papers = papers.to_dict('records')
+        papers = papers.to_dict("records")
         await gather_with_concurrency(100, redis_conn, *papers)
         print("papers loaded!")
 
