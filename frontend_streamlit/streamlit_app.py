@@ -15,13 +15,19 @@ from data.categories import CAT_TO_DEFINITION_MAP
 from redis_player_one.embedder import make_embeddings
 from redis_player_one.redis_client import redis_client
 
+import torch
+
 
 @st.experimental_singleton(show_spinner=False)
 def instanciate_retriever():
     with st.spinner("Loading models..."):
         document_store = RedisDocumentStore(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD)
         retriever = BM25Retriever(document_store=document_store)
-        reader = FARMReader(model_name_or_path="deepset/roberta-base-squad2", use_gpu=False, context_window_size=2000)
+        if torch.cuda.is_available():
+            use_gpu=True
+        else:
+            use_gpu=False
+        reader = FARMReader(model_name_or_path="deepset/roberta-base-squad2", use_gpu=use_gpu, context_window_size=2000)
         pipe = ExtractiveQAPipeline(reader, retriever)
     return pipe
 
