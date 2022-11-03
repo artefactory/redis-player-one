@@ -5,9 +5,10 @@ from redis.commands.search.query import Query
 from haystack.nodes import EmbeddingRetriever
 from haystack.nodes.reader.farm import FARMReader
 from haystack.pipelines import ExtractiveQAPipeline
+import torch
 
 from redis_player_one.haystack.redis_document_store import RedisDocumentStore
-from config.redis_config import INDEX_NAME, SEARCH_TYPE, REDIS_HOST, REDIS_PORT, REDIS_PASSWORD
+from config.redis_config import INDEX_NAME, SEARCH_TYPE, REDIS_HOST, REDIS_PORT, REDIS_PASSWORD, TOP_K_RETRIEVER, TOP_K_READER
 from redis_player_one.embedder import make_embeddings
 from redis_player_one.redis_client import redis_client
 
@@ -18,13 +19,14 @@ def instanciate_retriever():
         document_store = RedisDocumentStore(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD)
         retriever = EmbeddingRetriever(
             document_store=document_store,
-            embedding_model="sentence-transformers/multi-qa-mpnet-base-dot-v1",
+            embedding_model="sentence-transformers/all-mpnet-base-v2",
             model_format="sentence_transformers",
         )     
         reader = FARMReader(
-            model_name_or_path="deepset/roberta-base-squad2", use_gpu=False, context_window_size=2000)
+            model_name_or_path="deepset/roberta-base-squad2", use_gpu=torch.cuda.is_available(), context_window_size=2000)
         pipe = ExtractiveQAPipeline(reader, retriever)
     return pipe
+
 
 
 def create_query(
@@ -79,11 +81,11 @@ def query_redis(text: str, date_range: list, nb_articles: int):    # TODO: Delet
     return results
 
 
-def make_qa_query(pipe, text: str, date_range: list, nb_articles: int):
+def make_qa_query(pipe, text: str, date_range: list):
     results = pipe.run(
         query=text,
         params={
-            "Retriever": {"top_k": nb_articles, "filters": {"date_range": date_range}},
-            "Reader": {"top_k": nb_articles}},
+            "Retriever": {"top_k": TOP_K_RETRIEVER, "filters": {"date_range": date_range}},
+            "Reader": {"top_k": TOP_K_READER}},
         debug=True)
     return results
