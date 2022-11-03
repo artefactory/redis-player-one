@@ -100,7 +100,7 @@ def _display_categories(paper):
 
 def _display_user_inputs():
     user_question = st.text_input(label="Enter your question here 👇", max_chars=2000, key="user_question_input")
-    date_range = st.slider("Select a range of dates", 2008, 2022, (2015, 2022))
+    date_range = st.slider("Select a range of dates", 2008, 2022, (2008, 2022))
     return user_question, date_range
 
 
