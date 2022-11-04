@@ -32,6 +32,8 @@ backcall==0.2.0
     # via ipython
 backoff==1.11.1
     # via posthog
+black==22.10.0
+    # via -r requirements.in
 blinker==1.5
     # via streamlit
 cachetools==5.2.0
@@ -45,6 +47,7 @@ charset-normalizer==2.1.1
     # via requests
 click==8.1.3
     # via
+    #   black
     #   databricks-cli
     #   flask
     #   mlflow
@@ -185,6 +188,8 @@ more-itertools==9.0.0
     # via farm-haystack
 msrest==0.7.1
     # via azure-ai-formrecognizer
+mypy-extensions==0.4.3
+    # via black
 nest-asyncio==1.5.6
     # via
     #   ipykernel
@@ -233,6 +238,8 @@ pandas==1.5.1
     #   streamlit
 parso==0.8.3
     # via jedi
+pathspec==0.10.1
+    # via black
 pexpect==4.8.0
     # via ipython
 pickleshare==0.7.5
@@ -241,6 +248,8 @@ pillow==9.3.0
     # via
     #   streamlit
     #   torchvision
+platformdirs==2.5.2
+    # via black
 pluggy==1.0.0
     # via pytest
 posthog==2.1.2
@@ -394,7 +403,9 @@ tokenizers==0.12.1
 toml==0.10.2
     # via streamlit
 tomli==2.0.1
-    # via pytest
+    # via
+    #   black
+    #   pytest
 toolz==0.12.0
     # via altair
 torch==1.12.1
@@ -436,6 +447,7 @@ typing-extensions==4.4.0
     # via
     #   azure-ai-formrecognizer
     #   azure-core
+    #   black
     #   huggingface-hub
     #   pydantic
     #   streamlit
