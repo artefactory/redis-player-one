@@ -1,19 +1,10 @@
-import numpy as np
 import streamlit as st
 import torch
 from haystack.nodes import EmbeddingRetriever
 from haystack.nodes.reader.farm import FARMReader
 from haystack.pipelines import ExtractiveQAPipeline
-from redis.commands.search.query import Query
 
-from config.redis_config import (
-    REDIS_HOST,
-    REDIS_PASSWORD,
-    REDIS_PORT,
-    TOP_K_READER,
-    TOP_K_RETRIEVER,
-)
-from redis_player_one.embedder import make_embeddings
+from config.redis_config import REDIS_HOST, REDIS_PASSWORD, REDIS_PORT, TOP_K_READER, TOP_K_RETRIEVER
 from redis_player_one.haystack.redis_document_store import RedisDocumentStore
 
 
