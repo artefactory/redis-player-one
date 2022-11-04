@@ -1,21 +1,21 @@
 import time
 
 import streamlit as st
-from lib.app_utils import button_callback, instanciate_button
+from lib.app_utils import button_callback, instanciate_button, display_categories, display_user_inputs, load_fontawesome
 from lib.query_utils import instanciate_retriever, make_qa_query
 
-from config.redis_config import ROOT_PATH
-from data.categories import CAT_TO_DEFINITION_MAP
+from config import ASKYVES_IMG_PATH, REDIS_ICON_PATH
 
 
 def app():
-    st.set_page_config(page_title="Redis Player One", page_icon="https://arxiv.org/favicon.ico", layout="wide")
+    st.set_page_config(page_title="Redis Player One", page_icon=REDIS_ICON_PATH, layout="wide")
+    load_fontawesome()
     pipe = instanciate_retriever()
     instanciate_button("button1")
-    st.sidebar.image(str(ROOT_PATH / "data/askiv.png"))
+    st.sidebar.image(ASKYVES_IMG_PATH)
     with st.form(key="content_section"):
         with st.sidebar:
-            user_question, date_range = _display_user_inputs()
+            user_question, date_range = display_user_inputs()
             st.form_submit_button("Submit to Yves", on_click=button_callback, kwargs={"name": "button1"})
 
     if st.session_state["button1"]:
@@ -23,7 +23,7 @@ def app():
             st.error("please type a question in the searchbar")
         else:
             st.markdown(
-                f'<h2 style="color:#FFFFFF;font-size:30px;">You\'ve asked: <br><em>"{user_question}"</em></h1>',
+                f'<h1 style="color:#000000;font-size:34px;">You\'ve asked: <br><em style="color:#FFFFFF;font-size:30px;">&laquo; {user_question} &raquo;</em></h1>',
                 unsafe_allow_html=True,
             )
             st.markdown("""---""")
@@ -50,7 +50,7 @@ def app():
                     col1, col2 = st.columns([3, 1])
                     with col1:
                         st.markdown(
-                            f'<h2 style="color:#2892D7;font-size:19px;">Abstract #{i + 1} - {paper.meta["name"]}</h1>',
+                            f'<h1> <a style="color:#F71734;font-size:22px;" href="https://arxiv.org/abs/{paper.document_id}"> Abstract #{i + 1} - {paper.meta["name"]}</h1>',
                             unsafe_allow_html=True,
                         )
                         abstact_str = paper.context
@@ -59,52 +59,30 @@ def app():
                         st.markdown(f'<p style="color:#FFF;font-size:19px;">{abstact_str}</p>', unsafe_allow_html=True)
 
                     with col2:
-                        similarity_score_str = f"{round(100 *float(paper.score), 1)}%"
                         st.markdown(
-                            '<h2 style="color:#F71734;font-size:19px;">Relevance score:</h2>', unsafe_allow_html=True
-                        )
-                        st.markdown(
-                            f'<h2 style="color:#FFFFFF;font-size:19px;">📊 {similarity_score_str}</h2>',
+                            f'<h1 style="font-size:25px;"> </h1>',
                             unsafe_allow_html=True,
                         )
+                        similarity_score_str = f"{round(100 *float(paper.score), 1)}%"
+                        crosshairs_icon = '<i class="fa-solid fa-crosshairs" style="color:#F71734;font-size:19px;"></i>'
                         st.markdown(
-                            f'<h1 style="color:#F71734;font-size:16px;">🔗 <a href="https://arxiv.org/abs/{paper.document_id}">Link to the article</a></h1>',
+                            f'<h2 style="color:#FFFFFF;font-size:19px;"> {crosshairs_icon} &nbsp {similarity_score_str}</h2>',
                             unsafe_allow_html=True,
                         )
 
                         if paper.meta["update_date"]:
+                            calendar_icon = '<i class="fa-regular fa-calendar" style="color:#F71734;font-size:19px;"></i>'
                             st.markdown(
-                                '<h1 style="color:#F71734;font-size:14px;"><u>Updated on:</u></h1>',
-                                unsafe_allow_html=True,
-                            )
-                            st.markdown(
-                                f'<h1 style="color:#FFFFF;font-size:14px;">📆 {paper.meta["update_date"]}</h1>',
+                                f'<h1 style="color:#FFFFFF;font-size:19px;"> {calendar_icon} &nbsp {paper.meta["update_date"]}</h1>',
                                 unsafe_allow_html=True,
                             )
 
                         if paper.meta["categories"]:
-                            def_str = _display_categories(paper)
+                            def_str = display_categories(paper)
                         else:
                             def_str = "Unknown categories"
-                        st.markdown(
-                            '<h1 style="color:#F71734;font-size:14px;"><u>Categories:</u></h1>', unsafe_allow_html=True
-                        )
-                        st.markdown(f'<h1 style="color:#FFFFFF;font-size:14px;">{def_str}</h1>', unsafe_allow_html=True)
+                        st.markdown(f'<h1 style="color:#FFFFFF;font-size:14px;"> {def_str}</h1>', unsafe_allow_html=True)
                     st.markdown("""---""")
-
-
-def _display_categories(paper):
-    cats_list = paper.meta["categories"].split(",")
-    def_list = sorted(set(map(lambda x: CAT_TO_DEFINITION_MAP.get(x, x), cats_list)))
-    def_list[0] = f"✅ {def_list[0]}"
-    def_str = "<br>✅ ".join(def_list)
-    return def_str
-
-
-def _display_user_inputs():
-    user_question = st.text_input(label="Enter your question here 👇", max_chars=2000, key="user_question_input")
-    date_range = st.slider("Select a range of dates", 2008, 2022, (2008, 2022))
-    return user_question, date_range
 
 
 if __name__ == "__main__":

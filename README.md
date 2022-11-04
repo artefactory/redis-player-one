@@ -1,7 +1,7 @@
 
-# **ASK Yves, by Redis Player One**
+# **Ask' Yves**
 <div align="center">
-    <a href="https://github.com/RedisVentures/redis-arXiv-search"><img src="data/askiv.png" width="30%"><img></a>
+    <a href="https://github.com/RedisVentures/redis-arXiv-search"><img src="assets/askyves.png" width="30%"><img></a>
     <br />
     <br />
 <div display="inline-block">
@@ -12,24 +12,24 @@
     <br />
 </div>
 
-# Ask' Yves
+TODO: Clean image
 
 Yves Saint Laurent was one of the greatest minds of french history. He spent a lot of time reading scientific papers on arXiv.
 
 Ask him anything. He will have an answer. Probably not the right one, but you might be surprised 😅
 
-## How it works
-# TODO
-
 ## Getting Started
 
-### Run
+# TODO - How to use the app + Screenshots
 
-`make run_app`
 
-### Set-up
+## Contribute
 
-The steps below outline how to get this app up and running on your machine.
+## **TODO: Retrieve articles from Kaggle + setup Redis DB + Do the embeddings**
+
+TODO
+
++ References of original redis demo repo
 
 ## **Run the app locally**
 

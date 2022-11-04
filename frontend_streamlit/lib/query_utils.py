@@ -4,8 +4,8 @@ from haystack.nodes import EmbeddingRetriever
 from haystack.nodes.reader.farm import FARMReader
 from haystack.pipelines import ExtractiveQAPipeline
 
-from config.redis_config import REDIS_HOST, REDIS_PASSWORD, REDIS_PORT, TOP_K_READER, TOP_K_RETRIEVER
-from redis_player_one.haystack.redis_document_store import RedisDocumentStore
+from config import REDIS_HOST, REDIS_PASSWORD, REDIS_PORT, TOP_K_READER, TOP_K_RETRIEVER
+from askyves.redis_document_store import RedisDocumentStore
 
 
 @st.experimental_singleton(show_spinner=False)
