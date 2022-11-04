@@ -49,8 +49,9 @@ run_qa_example:
 # help: run_linter                      - lint code
 .PHONY: run_linter
 run_linter:
-	@echo "Running linter"
-	@isort .
+	@echo "Running linter and code formatting checks"
+	@isort . --check --diff --profile black
+	@black --check .
 	@flake8 .
 
 # help:
