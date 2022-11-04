@@ -42,7 +42,7 @@ def app():
                     f"Top {len(results['answers'])} answers found in {round(end_time - start_time, 2)} seconds!"
                 )
             else:
-                st.sidebar.error(f"Yves couldn't find an answer to your question...")
+                st.sidebar.error("Yves couldn't find an answer to your question...")
 
             if results:
                 answers = sorted(results["answers"], key=lambda x: x.score, reverse=True)
