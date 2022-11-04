@@ -4,6 +4,8 @@
 #
 #    pip-compile requirements.in
 #
+alembic==1.8.1
+    # via mlflow
 altair==4.2.0
     # via streamlit
 appnope==0.1.3
@@ -18,22 +20,45 @@ attrs==22.1.0
     # via
     #   jsonschema
     #   pytest
+azure-ai-formrecognizer==3.2.0
+    # via farm-haystack
+azure-common==1.1.28
+    # via azure-ai-formrecognizer
+azure-core==1.26.0
+    # via
+    #   azure-ai-formrecognizer
+    #   msrest
 backcall==0.2.0
     # via ipython
+backoff==1.11.1
+    # via posthog
+black==22.10.0
+    # via -r requirements.in
 blinker==1.5
     # via streamlit
 cachetools==5.2.0
     # via streamlit
 certifi==2022.9.24
-    # via requests
+    # via
+    #   elasticsearch
+    #   msrest
+    #   requests
 charset-normalizer==2.1.1
     # via requests
 click==8.1.3
     # via
+    #   black
+    #   databricks-cli
+    #   flask
+    #   mlflow
     #   nltk
     #   streamlit
+cloudpickle==2.2.0
+    # via mlflow
 commonmark==0.9.1
     # via rich
+databricks-cli==0.17.3
+    # via mlflow
 debugpy==1.6.3
     # via ipykernel
 decorator==5.1.1
@@ -42,32 +67,59 @@ decorator==5.1.1
     #   validators
 deprecated==1.2.13
     # via redis
+dill==0.3.6
+    # via farm-haystack
+docker==6.0.1
+    # via mlflow
+docopt==0.6.2
+    # via num2words
+elasticsearch==7.17.7
+    # via farm-haystack
 entrypoints==0.4
     # via
     #   altair
     #   jupyter-client
+    #   mlflow
 exceptiongroup==1.0.0
     # via pytest
 executing==1.2.0
     # via stack-data
+farm-haystack==1.10.0
+    # via -r requirements.in
 filelock==3.8.0
     # via
     #   huggingface-hub
     #   transformers
 flake8==5.0.4
     # via -r requirements.in
+flask==2.2.2
+    # via
+    #   mlflow
+    #   prometheus-flask-exporter
 gitdb==4.0.9
     # via gitpython
 gitpython==3.1.29
-    # via streamlit
+    # via
+    #   mlflow
+    #   streamlit
+greenlet==2.0.0
+    # via sqlalchemy
+gunicorn==20.1.0
+    # via mlflow
 huggingface-hub==0.10.1
     # via
+    #   farm-haystack
     #   sentence-transformers
     #   transformers
 idna==3.4
     # via requests
 importlib-metadata==5.0.0
-    # via streamlit
+    # via
+    #   flask
+    #   mlflow
+    #   streamlit
+inflect==6.0.2
+    # via quantulum3
 iniconfig==1.1.1
     # via pytest
 ipykernel==6.16.2
@@ -80,56 +132,100 @@ ipython==8.6.0
     #   ipywidgets
 ipywidgets==8.0.2
     # via pydeck
+isodate==0.6.1
+    # via msrest
 isort==5.10.1
     # via -r requirements.in
+itsdangerous==2.1.2
+    # via flask
+jarowinkler==1.2.3
+    # via rapidfuzz
 jedi==0.18.1
     # via ipython
 jinja2==3.1.2
     # via
     #   altair
+    #   flask
     #   pydeck
 joblib==1.2.0
     # via
     #   nltk
     #   scikit-learn
 jsonschema==4.16.0
-    # via altair
+    # via
+    #   altair
+    #   farm-haystack
 jupyter-client==7.4.4
     # via ipykernel
 jupyter-core==4.11.2
     # via jupyter-client
 jupyterlab-widgets==3.0.3
     # via ipywidgets
+langdetect==1.0.9
+    # via farm-haystack
+lxml==4.9.1
+    # via python-docx
+mako==1.2.3
+    # via alembic
 markupsafe==2.1.1
-    # via jinja2
+    # via
+    #   jinja2
+    #   mako
+    #   werkzeug
 matplotlib-inline==0.1.6
     # via
     #   ipykernel
     #   ipython
 mccabe==0.7.0
     # via flake8
+mlflow==1.30.0
+    # via farm-haystack
+mmh3==3.0.0
+    # via farm-haystack
+monotonic==1.6
+    # via posthog
+more-itertools==9.0.0
+    # via farm-haystack
+msrest==0.7.1
+    # via azure-ai-formrecognizer
+mypy-extensions==0.4.3
+    # via black
 nest-asyncio==1.5.6
     # via
     #   ipykernel
     #   jupyter-client
+networkx==2.8.8
+    # via farm-haystack
 nltk==3.7
-    # via sentence-transformers
+    # via
+    #   farm-haystack
+    #   sentence-transformers
+num2words==0.5.12
+    # via quantulum3
 numpy==1.23.4
     # via
     #   altair
+    #   mlflow
     #   pandas
     #   pyarrow
     #   pydeck
     #   scikit-learn
     #   scipy
     #   sentence-transformers
+    #   seqeval
     #   streamlit
     #   torchvision
     #   transformers
+oauthlib==3.2.2
+    # via
+    #   databricks-cli
+    #   requests-oauthlib
 packaging==21.3
     # via
+    #   docker
     #   huggingface-hub
     #   ipykernel
+    #   mlflow
     #   pytest
     #   redis
     #   streamlit
@@ -137,9 +233,13 @@ packaging==21.3
 pandas==1.5.1
     # via
     #   altair
+    #   farm-haystack
+    #   mlflow
     #   streamlit
 parso==0.8.3
     # via jedi
+pathspec==0.10.1
+    # via black
 pexpect==4.8.0
     # via ipython
 pickleshare==0.7.5
@@ -148,12 +248,22 @@ pillow==9.3.0
     # via
     #   streamlit
     #   torchvision
+platformdirs==2.5.2
+    # via black
 pluggy==1.0.0
     # via pytest
+posthog==2.1.2
+    # via farm-haystack
+prometheus-client==0.15.0
+    # via prometheus-flask-exporter
+prometheus-flask-exporter==0.20.3
+    # via mlflow
 prompt-toolkit==3.0.31
     # via ipython
 protobuf==3.20.3
-    # via streamlit
+    # via
+    #   mlflow
+    #   streamlit
 psutil==5.9.3
     # via ipykernel
 ptyprocess==0.7.0
@@ -164,6 +274,10 @@ pyarrow==10.0.0
     # via streamlit
 pycodestyle==2.9.1
     # via flake8
+pydantic==1.10.2
+    # via
+    #   farm-haystack
+    #   inflect
 pydeck==0.7.1
     # via streamlit
 pyflakes==2.5.0
@@ -172,6 +286,8 @@ pygments==2.13.0
     # via
     #   ipython
     #   rich
+pyjwt==2.6.0
+    # via databricks-cli
 pympler==1.0.1
     # via streamlit
 pyparsing==3.0.9
@@ -184,19 +300,31 @@ python-dateutil==2.8.2
     # via
     #   jupyter-client
     #   pandas
+    #   posthog
     #   streamlit
+python-docx==0.8.11
+    # via farm-haystack
 pytz==2022.5
-    # via pandas
+    # via
+    #   mlflow
+    #   pandas
 pytz-deprecation-shim==0.1.0.post0
     # via tzlocal
 pyyaml==6.0
     # via
     #   huggingface-hub
+    #   mlflow
     #   transformers
 pyzmq==24.0.1
     # via
     #   ipykernel
     #   jupyter-client
+quantulum3==0.7.11
+    # via farm-haystack
+querystring-parser==1.2.4
+    # via mlflow
+rapidfuzz==2.7.0
+    # via farm-haystack
 redis==4.3.4
     # via -r requirements.in
 regex==2022.9.13
@@ -205,48 +333,91 @@ regex==2022.9.13
     #   transformers
 requests==2.28.1
     # via
+    #   azure-core
+    #   databricks-cli
+    #   docker
+    #   farm-haystack
     #   huggingface-hub
+    #   mlflow
+    #   msrest
+    #   posthog
+    #   requests-oauthlib
     #   streamlit
+    #   tika
     #   torchvision
     #   transformers
+requests-oauthlib==1.3.1
+    # via msrest
 rich==12.6.0
     # via streamlit
 scikit-learn==1.1.3
-    # via sentence-transformers
+    # via
+    #   farm-haystack
+    #   sentence-transformers
+    #   seqeval
 scipy==1.9.3
     # via
+    #   farm-haystack
+    #   mlflow
     #   scikit-learn
     #   sentence-transformers
 semver==2.13.0
     # via streamlit
 sentence-transformers==2.2.2
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   farm-haystack
 sentencepiece==0.1.97
     # via sentence-transformers
+seqeval==1.2.2
+    # via farm-haystack
 six==1.16.0
-    # via python-dateutil
+    # via
+    #   azure-core
+    #   databricks-cli
+    #   isodate
+    #   langdetect
+    #   posthog
+    #   python-dateutil
+    #   querystring-parser
 smmap==5.0.0
     # via gitdb
+sqlalchemy==1.4.42
+    # via
+    #   alembic
+    #   mlflow
+sqlparse==0.4.3
+    # via mlflow
 stack-data==0.6.0
     # via ipython
 streamlit==1.14.0
     # via -r requirements.in
+tabulate==0.9.0
+    # via databricks-cli
 threadpoolctl==3.1.0
     # via scikit-learn
-tokenizers==0.13.1
+tika==1.24
+    # via farm-haystack
+tokenizers==0.12.1
     # via transformers
 toml==0.10.2
     # via streamlit
 tomli==2.0.1
-    # via pytest
+    # via
+    #   black
+    #   pytest
 toolz==0.12.0
     # via altair
-torch==1.13.0
+torch==1.12.1
     # via
+    #   -r requirements.in
+    #   farm-haystack
     #   sentence-transformers
     #   torchvision
-torchvision==0.14.0
-    # via sentence-transformers
+torchvision==0.13.1
+    # via
+    #   -r requirements.in
+    #   sentence-transformers
 tornado==6.2
     # via
     #   ipykernel
@@ -254,6 +425,7 @@ tornado==6.2
     #   streamlit
 tqdm==4.64.1
     # via
+    #   farm-haystack
     #   huggingface-hub
     #   nltk
     #   sentence-transformers
@@ -267,11 +439,17 @@ traitlets==5.5.0
     #   jupyter-core
     #   matplotlib-inline
     #   pydeck
-transformers==4.23.1
-    # via sentence-transformers
+transformers==4.21.2
+    # via
+    #   farm-haystack
+    #   sentence-transformers
 typing-extensions==4.4.0
     # via
+    #   azure-ai-formrecognizer
+    #   azure-core
+    #   black
     #   huggingface-hub
+    #   pydantic
     #   streamlit
     #   torch
     #   torchvision
@@ -280,16 +458,26 @@ tzdata==2022.6
 tzlocal==4.2
     # via streamlit
 urllib3==1.26.12
-    # via requests
+    # via
+    #   docker
+    #   elasticsearch
+    #   requests
 validators==0.20.0
     # via streamlit
 watchdog==2.1.9
     # via -r requirements.in
 wcwidth==0.2.5
     # via prompt-toolkit
+websocket-client==1.4.1
+    # via docker
+werkzeug==2.2.2
+    # via flask
 widgetsnbextension==4.0.3
     # via ipywidgets
 wrapt==1.14.1
     # via deprecated
 zipp==3.10.0
     # via importlib-metadata
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools

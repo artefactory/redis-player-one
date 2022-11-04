@@ -36,8 +36,6 @@ env:
 run_app:
 	@PYTHONPATH=. streamlit run frontend_streamlit/streamlit_app.py
 
-
-
 # help:
 # help: Run linter
 # help: -------------
@@ -45,8 +43,9 @@ run_app:
 # help: run_linter                      - lint code
 .PHONY: run_linter
 run_linter:
-	@echo "Running linter"
-	@isort .
+	@echo "Running linter and code formatting checks"
+	@isort . --check --diff --profile black
+	@black --check .
 	@flake8 .
 
 # help:
