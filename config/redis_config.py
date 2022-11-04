@@ -30,8 +30,8 @@ NUMBER_OF_RESULTS = 10
 ROOT_PATH = get_project_root()
 
 if torch.cuda.is_available():
-    TOP_K_RETRIEVER = 100
+    TOP_K_READER = 100
 else:
-    TOP_K_RETRIEVER = 10
+    TOP_K_READER = 10
 
-TOP_K_READER = 10
+TOP_K_RETRIEVER = 10
