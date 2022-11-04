@@ -1,0 +1,42 @@
+{
+  "name": "redis_player_one",
+  "image": {
+    "name": "saturn-python-pytorch",
+    "version": "2022.04.01",
+    "owner": "saturncloud"
+  },
+  "description": "",
+  "environment_variables": {
+    "PYTHONPATH": ".",
+    "STREAMLIT_HEADLESS": "True",
+    "STREAMLIT_SERVER_PORT": "8000",
+    "STREAMLIT_SERVER_ADDRESS": "0.0.0.0"
+  },
+  "working_directory": "/home/jovyan/workspace",
+  "extra_packages": {
+    "pip": {
+      "install": "streamlit pandas numpy redis sentence-transformers farm-haystack"
+    }
+  },
+  "start_script": "npm install mathjax\ncd redis-player-one/",
+  "git_repositories": [
+    {
+      "url": "git@github.com:artefactory/redis-player-one.git",
+      "path": "/home/jovyan/workspace/redis-player-one",
+      "public": false,
+      "on_restart": "reclone",
+      "reference": "main",
+      "reference_type": "branch"
+    }
+  ],
+  "deployment": {
+    "instance_type": "g4dnxlarge",
+    "command": "make run_app",
+    "instance_count": 1,
+    "public": true,
+    "start_ssh": true
+  },
+  "owner": "redisplayerone",
+  "visibility": "org",
+  "schema_version": "2022.08.01"
+}
