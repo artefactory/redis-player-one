@@ -32,7 +32,7 @@ ROOT_PATH = get_project_root()
 ASKYVES_IMG_PATH = str(ROOT_PATH / "assets/askyves.png")
 REDIS_ICON_PATH = "https://arxiv.org/favicon.ico"
 
-FONT_AWESOME_IMPORT = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">'
+FONT_AWESOME_IMPORT = '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">'  # noqa: E501
 
 if torch.cuda.is_available():
     TOP_K_READER = 100

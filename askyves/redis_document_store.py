@@ -7,8 +7,8 @@ from haystack.document_stores.search_engine import SearchEngineDocumentStore
 from haystack.schema import Document
 from redis.commands.search.query import Query
 
-from config import INDEX_NAME, NUMBER_OF_RESULTS, SEARCH_TYPE
 from askyves.embedder import make_embeddings
+from config import INDEX_NAME, NUMBER_OF_RESULTS, SEARCH_TYPE
 
 logger = logging.getLogger(__name__)
 

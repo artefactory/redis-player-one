@@ -1,6 +1,6 @@
 import streamlit as st
-from assets.categories import CAT_TO_DEFINITION_MAP
 
+from assets.categories import CAT_TO_DEFINITION_MAP
 from config import FONT_AWESOME_IMPORT
 
 

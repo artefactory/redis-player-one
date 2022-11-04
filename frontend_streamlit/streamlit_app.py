@@ -1,7 +1,7 @@
 import time
 
 import streamlit as st
-from lib.app_utils import button_callback, instanciate_button, display_categories, display_user_inputs, load_fontawesome
+from lib.app_utils import button_callback, display_categories, display_user_inputs, instanciate_button, load_fontawesome
 from lib.query_utils import instanciate_retriever, make_qa_query
 
 from config import ASKYVES_IMG_PATH, REDIS_ICON_PATH
@@ -60,7 +60,7 @@ def app():
 
                     with col2:
                         st.markdown(
-                            f'<h1 style="font-size:25px;"> </h1>',
+                            '<h1 style="font-size:25px;"> </h1>',
                             unsafe_allow_html=True,
                         )
                         similarity_score_str = f"{round(100 *float(paper.score), 1)}%"
@@ -71,7 +71,9 @@ def app():
                         )
 
                         if paper.meta["update_date"]:
-                            calendar_icon = '<i class="fa-regular fa-calendar" style="color:#F71734;font-size:19px;"></i>'
+                            calendar_icon = (
+                                '<i class="fa-regular fa-calendar" style="color:#F71734;font-size:19px;"></i>'
+                            )
                             st.markdown(
                                 f'<h1 style="color:#FFFFFF;font-size:19px;"> {calendar_icon} &nbsp {paper.meta["update_date"]}</h1>',
                                 unsafe_allow_html=True,
@@ -81,7 +83,9 @@ def app():
                             def_str = display_categories(paper)
                         else:
                             def_str = "Unknown categories"
-                        st.markdown(f'<h1 style="color:#FFFFFF;font-size:14px;"> {def_str}</h1>', unsafe_allow_html=True)
+                        st.markdown(
+                            f'<h1 style="color:#FFFFFF;font-size:14px;"> {def_str}</h1>', unsafe_allow_html=True
+                        )
                     st.markdown("""---""")
 
 
