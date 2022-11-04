@@ -3,7 +3,7 @@ MAKEFLAGS += --no-print-directory
 # Do not remove this block. It is used by the 'help' rule when
 # constructing the help output.
 # help:
-# help: Redis arXiv Search App Makefile help
+# help: Ask'Yves App Makefile help
 # help:
 
 SHELL:=/bin/bash
@@ -21,11 +21,11 @@ help:
 # help: env                   - setup a Python conda env for this application
 .PHONY: env
 env:
-	@conda create -n arXiv python=3.9 -y
-	$(CONDA_ACTIVATE) arXiv
+	@conda create -n askyves python=3.9 -y
+	$(CONDA_ACTIVATE) askyves
 	@backend/ \
 	&& python -m pip install -r requirements.txt \
-	&& python -m pip install -r frontend_streamlit/requirements.txt
+	&& python -m pip install -r frontend/requirements.txt
 
 # help:
 # help: Run streamlit app
@@ -34,7 +34,7 @@ env:
 # help: run_app                      - runs the streamlit app
 .PHONY: run_app
 run_app:
-	@PYTHONPATH=. streamlit run frontend_streamlit/streamlit_app.py
+	@PYTHONPATH=. streamlit run frontend/streamlit_app.py
 
 # help:
 # help: Run linter
