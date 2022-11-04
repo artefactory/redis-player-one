@@ -36,12 +36,6 @@ env:
 run_app:
 	@PYTHONPATH=. streamlit run frontend_streamlit/streamlit_app.py
 
-# help: run_qa_example                      - runs the question answering example
-.PHONY: run_qa_example
-run_qa_example:
-	@PYTHONPATH=. python redis_player_one/haystack/example.py
-
-
 # help:
 # help: Run linter
 # help: -------------

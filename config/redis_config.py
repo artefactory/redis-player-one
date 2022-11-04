@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import torch
 
 
 def get_project_root() -> Path:
@@ -26,7 +27,10 @@ if missing:
 SEARCH_TYPE = "KNN"
 NUMBER_OF_RESULTS = 10
 ROOT_PATH = get_project_root()
-# TODO: intuition Karim/Amale > plus c'est grand mieux c'est mais ça ajoute beaucoup de temps d'exec
-# donc check sur GPU si ok
-TOP_K_RETRIEVER = 10
+
+if torch.cuda.is_available():
+    TOP_K_RETRIEVER = 100
+else:
+    TOP_K_RETRIEVER = 10
+
 TOP_K_READER = 10
