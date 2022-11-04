@@ -37,7 +37,7 @@ def app():
                 )
                 end_time = time.time()
 
-            if len(results['answers']) > 0:
+            if len(results["answers"]) > 0:
                 st.sidebar.success(
                     f"Top {len(results['answers'])} answers found in {round(end_time - start_time, 2)} seconds!"
                 )
