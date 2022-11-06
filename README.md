@@ -1,27 +1,35 @@
 
 # **Ask' Yves**
 <div align="center">
-    <a href="https://github.com/RedisVentures/redis-arXiv-search"><img src="assets/askyves.png" width="30%"><img></a>
+    <a href="https://pd-redis-redisplay-ea87d28003b046a8a3617ebdbddfdbe3.community.saturnenterprise.io/"><img src="assets/askyves.png" width="50%"><img></a>
     <br />
     <br />
 <div display="inline-block">
-    <a href="https://docsearch.redisventures.com"><b>Hosted Demo</b></a>&nbsp;&nbsp;&nbsp;
-    <a href="https://github.com/RedisVentures/redis-arXiv-search"><b>Code</b></a>&nbsp;&nbsp;&nbsp;
+    <a href="https://hackathon.redisventures.com/"><b>Hackathon Page</b></a>&nbsp;&nbsp;&nbsp;
+    <a href="https://www.kaggle.com/datasets/Cornell-University/arxiv"><b>ArXiv dataset</b></a>&nbsp;&nbsp;&nbsp;
+    <a href="https://pd-redis-redisplay-ea87d28003b046a8a3617ebdbddfdbe3.community.saturnenterprise.io/"><b>Hosted App</b></a>&nbsp;&nbsp;&nbsp;
   </div>
     <br />
     <br />
 </div>
 
-TODO: Clean image
 
 Yves Saint Laurent was one of the greatest minds of french history. He spent a lot of time reading scientific papers on arXiv.
 
 Ask him anything. He will have an answer. Probably not the right one, but you might be surprised 😅
 
-## Getting Started
 
-# TODO - How to use the app + Screenshots
+## **How to use the app**
+![Ask'Yves app interface](assets/app_interface.png)
 
+Ask'Yves app allow you to ask questions to Yves, who will search for an answer in abstracts of the ArXiv database. Whenever he's found something, Yves will display a set of abstracts ranked by relevance, and highlight the answer to your question in the abstract text.
+
+To ask a question to Yves, just fill the text prompt window on left sidebar, select a range of publication dates to retrieve abstracts from, and click on "Submit to Yves". The results will then be displayed along with information regarding the abstract: 
+- Relevance score
+- Publication date
+- Categories
+
+You can then access the article on arXiv by directly clicking on the article's title.
 
 ## Contribute
 
@@ -57,11 +65,7 @@ To run the app in your local environment, just run the following command:
 make run_app
 ```
 
-It will open a Streamlit window on your web-browser:
-
-# 
-TO PUT: IMAGE OF BROWSER
-#
+It will open a Streamlit window on your web-browser, as in [How to use the app](#-how-to-use-the-app) section.
 
 
 ## **Run the app on a Saturn Cloud Deployment instance**
@@ -76,14 +80,24 @@ You can easily create a deployment instance to run your app in Saturn Cloud by c
 
 4. Now you're ready to go! Click on "Overview" > "Start", and once the app is running, you can access it by clicking on the provided public URL.
 
-Note: The deployment instance will directly pull the main branch of this repo to run the app with, but you can modify the branch it pulls by modifying it in "Git Repos" section. 
+Notes: 
+- The deployment instance will directly pull the main branch of this repo to run the app with, but you can modify the branch it pulls by modifying it in "Git Repos" section. 
+- You may need to link a Saturn SSH key the first time you run the app, the instructions to do so will then be displayed on Saturn directly. You will just have to add Saturn SSH Key to your GitHub profile.
 
-TODO: Add instructions for SSH if necessary
 
+## Next steps
 
-### Interested in contributing?
+The app was designed in a limited amount of time, and there's obviously a lot of improvements to be made and features to explore. Here is a quick snapshot of some ideas we have:
+- We used a generic embedding model for the abstracts, it may be relevant to try fine-tuned models to see if it improves similarity search performances
+- Same for Q&A model, trying other models may improve question answering performances
+- We currently retrieve 10 documents when the app run on CPU, and 100 if the app run on GPU, which may be short for difficult questions. It may be interesting to have an adaptative number of retrieved documents depending on the quantity of answers found for a particular question
+
+## Interested in contributing?
 This is a new project. Comment on an open issue or create a new one. We can triage it from there.
 
-
-### Next steps
-# TODO
+## Additional links
+- [ArXiv Kaggle Dataset](https://www.kaggle.com/datasets/Cornell-University/arxiv)
+- [Hackathon Page](https://hackathon.redisventures.com/)
+- [MLOps Community Slack channel](https://join.slack.com/t/mlops-community/shared_invite/zt-1cjmjku5d-ZhJitSlS0VtqfCcwRpn_CQ)
+- [Redis](https://redis.io/)
+- [Saturn Cloud](https://saturncloud.io/)
