@@ -65,7 +65,7 @@ To run the app in your local environment, just run the following command:
 make run_app
 ```
 
-It will open a Streamlit window on your web-browser, as in [How to use the app](#-how-to-use-the-app) section.
+It will open a Streamlit window on your web-browser.
 
 
 ## **Run the app on a Saturn Cloud Deployment instance**
