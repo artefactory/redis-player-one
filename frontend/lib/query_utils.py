@@ -1,9 +1,44 @@
+import streamlit as st
+import torch
+from haystack.nodes import EmbeddingRetriever
+from haystack.nodes.reader.farm import FARMReader
+from haystack.pipelines import ExtractiveQAPipeline
 from redis.asyncio import Redis
 from redis.commands.search.field import TagField, VectorField
 from redis.commands.search.indexDefinition import IndexDefinition, IndexType
-from redis.commands.search.query import Query
 
-from config import INDEX_NAME
+from askyves.redis_document_store import RedisDocumentStore
+from config import INDEX_NAME, REDIS_HOST, REDIS_PASSWORD, REDIS_PORT, TOP_K_READER, TOP_K_RETRIEVER
+
+
+@st.experimental_singleton(show_spinner=False)
+def instanciate_retriever():
+    with st.spinner("Loading models..."):
+        document_store = RedisDocumentStore(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD)
+        retriever = EmbeddingRetriever(
+            document_store=document_store,
+            embedding_model="sentence-transformers/all-mpnet-base-v2",
+            model_format="sentence_transformers",
+        )
+        reader = FARMReader(
+            model_name_or_path="deepset/roberta-base-squad2",
+            use_gpu=torch.cuda.is_available(),
+            context_window_size=2000,
+        )
+        pipe = ExtractiveQAPipeline(reader, retriever)
+    return pipe
+
+
+def make_qa_query(pipe, text: str, date_range: list):
+    results = pipe.run(
+        query=text,
+        params={
+            "Retriever": {"top_k": TOP_K_RETRIEVER, "filters": {"date_range": date_range}},
+            "Reader": {"top_k": TOP_K_READER},
+        },
+        debug=True,
+    )
+    return results
 
 
 async def create_index(redis_conn, prefix: str, v_field: VectorField):
@@ -43,27 +78,3 @@ async def create_hnsw_index(redis_conn: Redis, number_of_vectors: int, prefix: s
         },
     )
     await create_index(redis_conn, prefix, text_field)
-
-
-def create_query(categories: list, years: list, search_type: str = "KNN", number_of_results: int = 20) -> Query:
-
-    tag = "("
-    if years:
-        years = " | ".join(years)
-        tag += f"@year:{{{years}}}"
-    if categories:
-        categories = " | ".join(categories)
-        tag += f"@categories:{{{categories}}}"
-    tag += ")"
-    # if no tags are selected
-    if len(tag) < 3:
-        tag = "*"
-    print(tag, flush=True)
-    base_query = f"{tag}=>[{search_type} {number_of_results} @vector $vec_param AS vector_score]"
-    return (
-        Query(base_query)
-        .sort_by("vector_score")
-        .paging(0, number_of_results)
-        .return_fields("paper_id", "paper_pk", "vector_score")
-        .dialect(2)
-    )
