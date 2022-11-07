@@ -19,7 +19,7 @@ Yves Saint Laurent was one of the greatest minds of french history. He spent a l
 Ask him anything. He will have an answer. Probably not the right one, but you might be surprised 😅
 
 
-## **How to use the app**
+# **How to use the app**
 ![Ask'Yves app interface](assets/app_interface.png)
 
 Ask'Yves app allow you to ask questions to Yves, who will search for an answer in abstracts of the ArXiv database. Whenever he's found something, Yves will display a set of abstracts ranked by relevance, and highlight the answer to your question in the abstract text.
@@ -31,7 +31,47 @@ To ask a question to Yves, just fill the text prompt window on left sidebar, sel
 
 You can then access the article on arXiv by directly clicking on the article's title.
 
-## Contribute
+# **How to setup the app**
+
+## **File architecture**
+```
+.
+├── LICENSE
+├── Makefile
+├── README.md
+├── askyves
+│   ├── embedder.py
+│   └── redis_document_store.py
+├── assets
+│   ├── app_interface.png
+│   ├── askyves.png
+│   └── categories.py
+├── config.py
+├── credentials
+│   ├── env.sh.example
+├── data
+│   ├── README.md
+│   ├── build_embeddings_multi_gpu.ipynb
+│   ├── load_data_in_redis.py
+│   └── requirements.txt
+├── frontend
+│   ├── lib
+│   │   ├── __init__.py
+│   │   ├── app_utils.py
+│   │   └── query_utils.py
+│   └── streamlit_app.py
+├── pyproject.toml
+├── requirements.in
+├── requirements.txt
+└── saturn-deployment-recipe.json
+```
+
+Project is divided into multiple folders:
+- askyves/ contains files related to document embedding and document store definition
+- data/ contains files related to Redis Database creation
+- frontend/ contains files related to the Streamlit App
+
+To setup the app, you'll first need to create a Redis DB containing your embedded documents. You'll then be able to launch and use the app, locally or on a Saturn Cloud instance.
 
 ## **Data and database**
 
@@ -103,7 +143,7 @@ Notes:
 - You may need to link a Saturn SSH key the first time you run the app, the instructions to do so will then be displayed on Saturn directly. You will just have to add Saturn SSH Key to your GitHub profile.
 
 
-## Next steps
+## **Next steps**
 
 The app was designed in a limited amount of time, and there's obviously a lot of improvements to be made and features to explore. Here is a quick snapshot of some ideas we have:
 - We used a generic embedding model for the abstracts, it may be relevant to try fine-tuned models to see if it improves similarity search performances
