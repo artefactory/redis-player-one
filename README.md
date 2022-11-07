@@ -125,7 +125,6 @@ make run_app
 
 It will open a Streamlit window on your web-browser.
 
-
 ## **Run the app on a Saturn Cloud Deployment instance**
 
 You can easily create a deployment instance to run your app in Saturn Cloud by copying the recipe stored in the file `saturn-deployment-recipe.json` at the root of the project. Here is the instruction to create your own instance:
@@ -142,6 +141,15 @@ Notes:
 - The deployment instance will directly pull the main branch of this repo to run the app with, but you can modify the branch it pulls by modifying it in "Git Repos" section. 
 - You may need to link a Saturn SSH key the first time you run the app, the instructions to do so will then be displayed on Saturn directly. You will just have to add Saturn SSH Key to your GitHub profile.
 
+## About the Question Answering pipeline
+
+The goal of this app is to ease information retrieval on research papers by allowing users to ask questions to the app in a natural language and get answers from papers. To do that, we found this [kaggle article](https://www.kaggle.com/code/officialshivanandroy/question-answering-with-arxiv-papers-at-scale) that we got inspired from. 
+
+The logic remains on the `haystack` framework. For the sake of our usage there are 3 `haystack` components to understand:
+
+* **Document Store**: Database storing the documents for our search. There are a lot of options already provided by `haystack` such as Elasticsearch, Faiss, OpenSearch, In-Memory, SQL ... We decided to create the `RedisDocumentStore` class to be able to benefit from the `haystack` framework while using the `Redis` database.
+* **Retriever**: Fast, simple algorithm that identifies candidate passages from a large collection of documents. Algorithms include TF-IDF or BM25, EmbeddingRetriever... We chose an `EmbeddingRetriever` with the same embedding model that was used to feed the `Redis` database.
+* **Reader**: the reader takes multiple passages of text as input and returns top-n answers with corresponding confidence scores. You can just load a pretrained model from Hugging Face's model hub or fine-tune it to your own domain data. We used the suggested model `sentence-transformers/all-mpnet-base-v2` as it is the state of the art model provided in the [haystack benchmark](https://haystack.deepset.ai/benchmarks) and that the first results looked pretty good for a first baseline. If we had more time we would have benched other models and tried a fine tuned model to our own dataset.
 
 ## **Next steps**
 
@@ -149,7 +157,7 @@ The app was designed in a limited amount of time, and there's obviously a lot of
 
 Here is a quick snapshot of some ideas we have:
 ### Improving current features
-- We used a generic embedding model for the abstracts, it may be relevant to try fine-tuned models to see if it improves similarity search performances
+- As said above, we used a generic embedding model for the abstracts, it may be relevant to try fine-tuned models to see if it improves similarity search performances
 - Same for Q&A model, trying other models may improve question answering performances
 - We currently retrieve 10 documents when the app run on CPU, and 100 if the app run on GPU, which may be short for difficult questions. It may be interesting to have an adaptative number of retrieved documents depending on the quantity of answers found for a particular question
 ### Adding new features
@@ -166,3 +174,4 @@ This is a new project. Comment on an open issue or create a new one. We can tria
 - [MLOps Community Slack channel](https://join.slack.com/t/mlops-community/shared_invite/zt-1cjmjku5d-ZhJitSlS0VtqfCcwRpn_CQ)
 - [Redis](https://redis.io/)
 - [Saturn Cloud](https://saturncloud.io/)
+- [Kaggle Question & Answering with ArXiV papers at scale](https://www.kaggle.com/code/officialshivanandroy/question-answering-with-arxiv-papers-at-scale)
