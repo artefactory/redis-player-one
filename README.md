@@ -145,10 +145,17 @@ Notes:
 
 ## **Next steps**
 
-The app was designed in a limited amount of time, and there's obviously a lot of improvements to be made and features to explore. Here is a quick snapshot of some ideas we have:
+The app was designed in a limited amount of time, and there's obviously a lot of improvements to be made and features to explore. 
+
+Here is a quick snapshot of some ideas we have:
+### Improving current features
 - We used a generic embedding model for the abstracts, it may be relevant to try fine-tuned models to see if it improves similarity search performances
 - Same for Q&A model, trying other models may improve question answering performances
 - We currently retrieve 10 documents when the app run on CPU, and 100 if the app run on GPU, which may be short for difficult questions. It may be interesting to have an adaptative number of retrieved documents depending on the quantity of answers found for a particular question
+### Adding new features
+- Integrating the redis database uploading process in the  `RedisDocumentStore` as it is done by `haystack` for [other document stores objects](https://github.com/deepset-ai/haystack/tree/main/haystack/document_stores)
+- Adding a generative pipeline to give a single answer to the question at the beginning and keep the extractive one to illustrate the answer with examples
+- Adding a time series representation of the papers on which the answer is found to give a visual timeline of those papers
 
 ## Interested in contributing?
 This is a new project. Comment on an open issue or create a new one. We can triage it from there.
