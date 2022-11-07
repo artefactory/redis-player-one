@@ -1,16 +1,12 @@
-#!/usr/bin/env python3
-import typing as t
 import asyncio
 import pickle
+import typing as t
 
 import numpy as np
 import redis.asyncio as redis
 
-from config import REDIS_URL, REDIS_INDEX_TYPE
-from frontend.lib.query_utils import (
-    create_flat_index,
-    create_hnsw_index
-)
+from config import REDIS_INDEX_TYPE, REDIS_URL
+from frontend.lib.query_utils import create_flat_index, create_hnsw_index
 
 
 def read_paper_df(path_to_pickle_file: str) -> t.List:
@@ -24,24 +20,26 @@ async def gather_with_concurrency(n, redis_conn, *papers):
 
     async def load_paper(paper):
         async with semaphore:
-            vector = paper.pop('vector')
+            vector = paper.pop("vector")
             key = "paper_vector:" + str(paper["id"])
             # async write data to redis
             await redis_conn.hset(
                 key,
                 mapping={
-                            "paper_id": paper["id"],
-                            "categories": paper["categories"],
-                            'title': paper['title'],
-                            'year': paper["year"],
-                            'authors': paper['authors'],
-                            'abstract': paper['abstract'],
-                            'update_date': paper["update_date"],
-                            "doi": paper["doi"],
-                            "journal-ref": paper["journal-ref"],
-                            "submitter": paper["submitter"],
-                            "vector": np.array(vector, dtype=np.float32).tobytes(),
-                        })
+                    "paper_id": paper["id"],
+                    "categories": paper["categories"],
+                    "title": paper["title"],
+                    "year": paper["year"],
+                    "authors": paper["authors"],
+                    "abstract": paper["abstract"],
+                    "update_date": paper["update_date"],
+                    "doi": paper["doi"],
+                    "journal-ref": paper["journal-ref"],
+                    "submitter": paper["submitter"],
+                    "vector": np.array(vector, dtype=np.float32).tobytes(),
+                },
+            )
+
     # gather with concurrency
     await asyncio.gather(*[load_paper(p) for p in papers])
 
@@ -53,7 +51,7 @@ async def load_all_data(path_to_pickle_file: str):
     else:
         print("Loading papers into Vecsim App")
         papers = read_paper_df(path_to_pickle_file)
-        papers = papers.to_dict('records')
+        papers = papers.to_dict("records")
         await gather_with_concurrency(100, redis_conn, *papers)
         print("papers loaded!")
 
