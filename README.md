@@ -171,6 +171,7 @@ Here is a non-exhaustive snapshot of some ideas we have:
 - Integrating the redis database uploading process in the  `RedisDocumentStore` as it is done by `haystack` for [other document stores objects](https://github.com/deepset-ai/haystack/tree/main/haystack/document_stores)
 - Adding a generative QA pipeline to give a single answer to the question at the beginning and keep the extractive one to illustrate the answer with examples
 - Adding a time series representation of the papers on which the answer is found to give a visual timeline of those papers
+- Splitting the deployment of the front streamlit app and the back ML pipeline > Host the app on a basic CPU instance and deploy the ML pipeline as an endpoint on a GPU instance to respect the single responsibility principle and better manage costs.
 
 ## Interested in contributing?
 This is a new project. Comment on an open issue or create a new one. We can triage it from there.
