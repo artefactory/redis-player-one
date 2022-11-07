@@ -141,7 +141,7 @@ Notes:
 - The deployment instance will directly pull the main branch of this repo to run the app with, but you can modify the branch it pulls by modifying it in "Git Repos" section. 
 - You may need to link a Saturn SSH key the first time you run the app, the instructions to do so will then be displayed on Saturn directly. You will just have to add Saturn SSH Key to your GitHub profile.
 
-## About the Question Answering pipeline
+## **About the Question Answering pipeline**
 
 The goal of this app is to ease information retrieval on research papers by allowing users to ask questions to the app in a natural language and get answers from papers. To do that, we found this [kaggle article](https://www.kaggle.com/code/officialshivanandroy/question-answering-with-arxiv-papers-at-scale) that we got inspired from. 
 
