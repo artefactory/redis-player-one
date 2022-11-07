@@ -16,14 +16,14 @@ def app():
     with st.form(key="content_section"):
         with st.sidebar:
             user_question, date_range = display_user_inputs()
-            st.form_submit_button("Submit to Yves", on_click=button_callback, kwargs={"name": "button1"})
+            st.form_submit_button("Ask Yves", on_click=button_callback, kwargs={"name": "button1"})
 
     if st.session_state["button1"]:
         if not user_question:
             st.error("please type a question in the searchbar")
         else:
             st.markdown(
-                f'<h1 style="color:#000000;font-size:34px;">You\'ve asked: <br><em style="color:#FFFFFF;font-size:30px;">&laquo; {user_question} &raquo;</em></h1>',
+                f'<h1 style="color:#F71734;font-size:34px;">You\'ve asked: <br><em style="color:#FFFFFF;font-size:30px;">&laquo; {user_question} &raquo;</em></h1>',
                 unsafe_allow_html=True,
             )
             st.markdown("""---""")

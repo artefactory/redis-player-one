@@ -24,7 +24,7 @@ Ask him anything. He will have an answer. Probably not the right one, but you mi
 
 Ask'Yves app allow you to ask questions to Yves, who will search for an answer in abstracts of the ArXiv database. Whenever he's found something, Yves will display a set of abstracts ranked by relevance, and highlight the answer to your question in the abstract text.
 
-To ask a question to Yves, just fill the text prompt window on left sidebar, select a range of publication dates to retrieve abstracts from, and click on "Submit to Yves". The results will then be displayed along with information regarding the abstract: 
+To ask a question to Yves, just fill the text prompt window on left sidebar, select a range of publication dates to retrieve abstracts from, and click on "Ask Yves". The results will then be displayed along with information regarding the abstract: 
 - Relevance score
 - Publication date
 - Categories
