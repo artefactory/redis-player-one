@@ -22,9 +22,9 @@ Ask him anything. He will have an answer. Probably not the right one, but you mi
 # **How to use the app**
 ![Ask'Yves app interface](assets/app_interface.png)
 
-Ask'Yves app allow you to ask questions to Yves, who will search for an answer in abstracts of the ArXiv database. Whenever he's found something, Yves will display a set of abstracts ranked by relevance, and highlight the answer to your question in the abstract text.
+Ask'Yves app allows you to ask questions to Yves, who will search for an answer in abstracts of the ArXiv database. Whenever he has found something, Yves will display a set of abstracts ranked by relevance, and highlight the answer to your question in the abstract text.
 
-To ask a question to Yves, just fill the text prompt window on left sidebar, select a range of publication dates to retrieve abstracts from, and click on "Ask Yves". The results will then be displayed along with information regarding the abstract: 
+To ask a question to Yves, just fill the text prompt window on the left sidebar, select a range of publication dates to retrieve abstracts from, and click on "Ask Yves". The results will then be displayed along with information regarding the abstract: 
 - Relevance score
 - Publication date
 - Categories
@@ -93,15 +93,15 @@ To setup the app, you'll first need to create a Redis DB containing your embedde
 
 ### Load data to Redis
 
-- Once the embeddings built:
-    - You'll need to export env variable. Check `credentials/env.sh.exemple` to have the list    
+- Once the embeddings are built:
+    - You'll need to export env variables. Check `credentials/env.sh.exemple` to have the list    
     - Then, run `python data/load_data_in_redis.py`
 
 ## **Run the app locally**
 
 **1. Setup python environment:**
 
-Run the following command to create a virtual environment and install all requirements:
+Run the following command to create a virtual environment and install all the requirements:
 ```bash
 make env
 make install_requirements
@@ -127,13 +127,13 @@ It will open a Streamlit window on your web-browser.
 
 ## **Run the app on a Saturn Cloud Deployment instance**
 
-You can easily create a deployment instance to run your app in Saturn Cloud by copying the recipe stored in the file `saturn-deployment-recipe.json` at the root of the project. Here is the instruction to create your own instance:
+You can easily create a deployment instance to run your app in Saturn Cloud by copying the recipe stored in the file `saturn-deployment-recipe.json` at the root of the project. Here are the instructions to create your own instance:
 
 1. First, you'll need to parametrize your credentials in Saturn Cloud so your instance can access them. Go to "Secrets" > "New", and create a secret for the 4 credentials variables you exported earlier.
 
 2. Then, go to "Resources" > "New Deployment" > "Use a Recipe", and paste the content of `saturn-deployment-recipe.json` in the open window. A deployment instance will be created with app parameters.
 
-3. Finally, you'll need to add the credentials that are necessary to run your app. After creating the instance, select it in "Resources", then go to "Secrets" > "Attach Secret Environment Variable", and select in the dropdown menu the secrets you defined in step 1. Be sure to assign corresponding environment variable name to them.
+3. Finally, you'll need to add the credentials that are necessary to run your app. After creating the instance, select it in "Resources", then go to "Secrets" > "Attach Secret Environment Variable", and select in the dropdown menu the secrets you defined in step 1. Be sure to assign the corresponding environment variable names to them.
 
 4. Now you're ready to go! Click on "Overview" > "Start", and once the app is running, you can access it by clicking on the provided public URL.
 
@@ -143,26 +143,33 @@ Notes:
 
 ## **About the Question Answering pipeline**
 
-The goal of this app is to ease information retrieval on research papers by allowing users to ask questions to the app in a natural language and get answers from papers. To do that, we found this [kaggle article](https://www.kaggle.com/code/officialshivanandroy/question-answering-with-arxiv-papers-at-scale) that we got inspired from. 
+The goal of this app is to ease information retrieval on research papers by allowing users to ask questions to the app in a natural language and get answers from papers. To do that, we found this [kaggle article](https://www.kaggle.com/code/officialshivanandroy/question-answering-with-arxiv-papers-at-scale) that we got inspired from.
 
-The logic remains on the `haystack` framework. For the sake of our usage there are 3 `haystack` components to understand:
+Basically when the user asks a question to the app, here is the following process in backend:
+- 1. It queries the Redis Vector Search database.
+- 2. Redis Vector Search DB returns the abstracts that are the closest in terms of vector similarity.
+- 3. Then, it leverages a question answering (QA) algorithm to extract the answers to the user query.
+
+We relied on the [haystack](https://haystack.deepset.ai/) framework to do QA at scale. For the sake of our usage there are 3 `haystack` components to understand:
 
 * **Document Store**: Database storing the documents for our search. There are a lot of options already provided by `haystack` such as Elasticsearch, Faiss, OpenSearch, In-Memory, SQL ... We decided to create the `RedisDocumentStore` class to be able to benefit from the `haystack` framework while using the `Redis` database.
 * **Retriever**: Fast, simple algorithm that identifies candidate passages from a large collection of documents. Algorithms include TF-IDF or BM25, EmbeddingRetriever... We chose an `EmbeddingRetriever` with the same embedding model that was used to feed the `Redis` database.
-* **Reader**: the reader takes multiple passages of text as input and returns top-n answers with corresponding confidence scores. You can just load a pretrained model from Hugging Face's model hub or fine-tune it to your own domain data. We used the suggested model `sentence-transformers/all-mpnet-base-v2` as it is the state of the art model provided in the [haystack benchmark](https://haystack.deepset.ai/benchmarks) and that the first results looked pretty good for a first baseline. If we had more time we would have benched other models and tried a fine tuned model to our own dataset.
+* **Reader**: the reader takes multiple texts as input and returns top-n answers with corresponding confidence scores. You can just load a pretrained model from Hugging Face's model hub or fine-tune it to your own domain data. We used the suggested model `sentence-transformers/all-mpnet-base-v2` as it is the state of the art model provided in the [haystack benchmark](https://haystack.deepset.ai/benchmarks) and that the first results looked pretty good for a first baseline. If we had more time we would have benched other models and tried a fine tuned model to our own dataset.
 
 ## **Next steps**
 
-The app was designed in a limited amount of time, and there's obviously a lot of improvements to be made and features to explore. 
+The app was designed in a limited amount of time, and there are obviously many improvements to be made, and features to explore. 
 
-Here is a quick snapshot of some ideas we have:
+Here is a non-exhaustive snapshot of some ideas we have:
+
 ### Improving current features
-- As said above, we used a generic embedding model for the abstracts, it may be relevant to try fine-tuned models to see if it improves similarity search performances
-- Same for Q&A model, trying other models may improve question answering performances
-- We currently retrieve 10 documents when the app run on CPU, and 100 if the app run on GPU, which may be short for difficult questions. It may be interesting to have an adaptative number of retrieved documents depending on the quantity of answers found for a particular question
+- We used a generic embedding model to embed the abstracts. It may be relevant to try fine-tuned models on arXiv data to see if it improves  similarity search performances
+- Same for QA model, trying other models may improve question answering performances
+- We currently retrieve 10 documents when the app run on CPU, and 100 if the app run on GPU. It can be a relativelly low number of text to answer difficult questions. It may be interesting to have an adaptative number of retrieved documents depending on the quantity of answers found for a particular question
+
 ### Adding new features
 - Integrating the redis database uploading process in the  `RedisDocumentStore` as it is done by `haystack` for [other document stores objects](https://github.com/deepset-ai/haystack/tree/main/haystack/document_stores)
-- Adding a generative pipeline to give a single answer to the question at the beginning and keep the extractive one to illustrate the answer with examples
+- Adding a generative QA pipeline to give a single answer to the question at the beginning and keep the extractive one to illustrate the answer with examples
 - Adding a time series representation of the papers on which the answer is found to give a visual timeline of those papers
 
 ## Interested in contributing?
@@ -175,3 +182,4 @@ This is a new project. Comment on an open issue or create a new one. We can tria
 - [Redis](https://redis.io/)
 - [Saturn Cloud](https://saturncloud.io/)
 - [Kaggle Question & Answering with ArXiV papers at scale](https://www.kaggle.com/code/officialshivanandroy/question-answering-with-arxiv-papers-at-scale)
+- [haystack](https://haystack.deepset.ai/)
