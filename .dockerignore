@@ -1,8 +1,0 @@
-# ignore .git folders
-.git
-
-# ignore specific.json files
-data/arxiv-metadata-oai-snapshot.json
-
-# ignore node_modules
-*node_modules
