@@ -14,6 +14,11 @@ logger = logging.getLogger(__name__)
 
 
 class RedisDocumentStore(SearchEngineDocumentStore):
+    """Python Class designed to enable the `haystack` (built by deepset) framework to build NLP pipelines.
+    This class creates the connection with the `Redis` database and can be integrated in a full `haystack` pipeline.
+    See https://github.com/deepset-ai/haystack for more.
+    """
+
     def __init__(
         self,
         host: Union[str, List[str]] = "localhost",
@@ -113,6 +118,9 @@ class RedisDocumentStore(SearchEngineDocumentStore):
             .dialect(2)
         )
 
+    # Some methods are mandatory when defining `SearchEngineDocumentStore` object
+    # However for the sake of this project they are not used so we didn't allocate time
+    # To fully develop them
     def _create_document_index(self):
         pass
 
