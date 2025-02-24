@@ -1,9 +1,9 @@
-streamlit==1.14.0
+streamlit==1.37.0
 watchdog==2.1.9
-redis==4.3.4
+redis==5.2.1
 torch==1.12.1
 torchvision==0.13.1
-farm-haystack==1.10.0
+farm-haystack==1.15.1
 sentence-transformers==2.2.2
 
 #Dev
